@@ -22,6 +22,7 @@
             --success: #28a745;
             --danger: #dc3545;
             --warning: #ffc107;
+            --info: #17a2b8;
         }
 
         body {
@@ -155,6 +156,80 @@
             font-family: inherit;
         }
 
+        /* بطاقة الرصيد */
+        .balance-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .balance-item {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+        }
+
+        .balance-item i {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .balance-item .label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .balance-item .value {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .balance-item .unit {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .balance-loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--primary);
+        }
+
+        /* معلومات الإجازة المحسوبة */
+        .leave-info {
+            background: #e8f4f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-right: 4px solid var(--info);
+            display: none;
+        }
+
+        .leave-info .days-count {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--info);
+        }
+
+        .leave-info .warning {
+            color: var(--warning);
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+
         /* زر الإرسال */
         .submit-btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
@@ -197,6 +272,18 @@
             text-align: center;
             font-weight: 600;
             display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .alert-success {
@@ -215,6 +302,12 @@
             background: #fff3cd;
             color: #856404;
             border: 1px solid #ffeaa7;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: var(--info);
+            border: 1px solid #bee5eb;
         }
 
         /* مؤشر التحميل */
@@ -305,6 +398,10 @@
             .form-group textarea {
                 padding: 12px;
             }
+            
+            .balance-card {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         @media (max-width: 480px) {
@@ -318,6 +415,10 @@
             
             .lang-tabs {
                 flex-direction: column;
+            }
+            
+            .balance-card {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -345,6 +446,28 @@
                 <button class="lang-btn" id="btn-en">English <i class="fas fa-language"></i></button>
             </div>
 
+            <!-- بطاقة عرض الرصيد -->
+            <div class="balance-card" id="balanceCard" style="display: none;">
+                <div class="balance-loading" id="balanceLoading">
+                    <i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...
+                </div>
+                <div id="balanceContent" style="display: none; width: 100%;">
+                    <!-- سيتم تعبئة الرصيد هنا -->
+                </div>
+            </div>
+
+            <!-- معلومات الإجازة المحسوبة -->
+            <div class="leave-info" id="leaveInfo">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fas fa-calendar-check"></i> عدد أيام الإجازة:</span>
+                    <span class="days-count" id="leaveDaysCount">0 يوم</span>
+                </div>
+                <div class="warning" id="balanceWarning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span id="warningMessage"></span>
+                </div>
+            </div>
+
             <!-- نموذج طلب الإجازة -->
             <form id="leaveForm">
                 <!-- القسم -->
@@ -364,7 +487,7 @@
                 <!-- اسم الموظف -->
                 <div class="form-group">
                     <label for="name"><i class="fas fa-user"></i> <span data-ar="اسم الموظف" data-en="Employee Name">اسم الموظف</span></label>
-                    <select id="name" name="name" required>
+                    <select id="name" name="name" required onchange="loadEmployeeBalance()">
                         <option value="" data-ar="اختر الموظف" data-en="Select Employee">اختر الموظف</option>
                     </select>
                 </div>
@@ -380,10 +503,10 @@
                 <!-- نوع الإجازة -->
                 <div class="form-group">
                     <label for="type"><i class="fas fa-calendar-alt"></i> <span data-ar="نوع الإجازة" data-en="Leave Type">نوع الإجازة</span></label>
-                    <select id="type" name="type" required>
+                    <select id="type" name="type" required onchange="calculateLeaveDays()">
                         <option value="" data-ar="اختر نوع الإجازة" data-en="Select Leave Type">اختر نوع الإجازة</option>
+                        <option value="annual" data-ar="إجازة سنوية" data-en="Annual Leave">إجازة سنوية</option>
                         <option value="sick" data-ar="إجازة مرضية" data-en="Sick Leave">إجازة مرضية</option>
-                        <option value="administrative" data-ar="إجازة إدارية" data-en="Administrative Leave">إجازة إدارية</option>
                         <option value="bereavement" data-ar="إجازة وفاة" data-en="Bereavement Leave">إجازة وفاة</option>
                         <option value="hourly" data-ar="إجازة ساعية" data-en="Hourly Leave">إجازة ساعية</option>
                         <option value="maternity" data-ar="إجازة أمومة" data-en="Maternity Leave">إجازة أمومة</option>
@@ -395,13 +518,13 @@
                 <!-- تاريخ البدء -->
                 <div class="form-group">
                     <label for="startDate"><i class="fas fa-calendar-plus"></i> <span data-ar="تاريخ البدء" data-en="Start Date">تاريخ البدء</span></label>
-                    <input type="date" id="startDate" name="startDate" required>
+                    <input type="date" id="startDate" name="startDate" required onchange="calculateLeaveDays()">
                 </div>
 
                 <!-- تاريخ الانتهاء -->
                 <div class="form-group">
                     <label for="endDate"><i class="fas fa-calendar-minus"></i> <span data-ar="تاريخ الانتهاء" data-en="End Date">تاريخ الانتهاء</span></label>
-                    <input type="date" id="endDate" name="endDate" required>
+                    <input type="date" id="endDate" name="endDate" required onchange="calculateLeaveDays()">
                 </div>
 
                 <!-- السبب -->
@@ -452,7 +575,7 @@
         <!-- الفوتر -->
         <footer class="footer">
             <p>© 2026 دار للسلام والازدهار. جميع الحقوق محفوظة.</p>
-            <p>نظام طلبات الإجازة v2.0 | تطوير بواسطة قسم المراقبة والتقييم</p>
+            <p>نظام طلبات الإجازة v3.0 | تطوير بواسطة قسم المراقبة والتقييم</p>
             <p><a href="#" onclick="showDebugInfo()"><i class="fas fa-bug"></i> معلومات التصحيح</a></p>
         </footer>
     </div>
@@ -505,6 +628,9 @@
             ]
         };
 
+        // بيانات رصيد الموظفين (مؤقتة - سيتم جلبها من الخادم لاحقاً)
+        let employeeBalances = {};
+
         let currentLang = 'ar';
 
         // ============= تهيئة التواريخ =============
@@ -539,17 +665,127 @@
                     nameSelect.appendChild(option);
                 });
             }
+            
+            // إخفاء الرصيد عند تغيير القسم
+            document.getElementById('balanceCard').style.display = 'none';
+            document.getElementById('leaveInfo').style.display = 'none';
+        }
+
+        // ============= تحميل رصيد الموظف =============
+        function loadEmployeeBalance() {
+            const employeeName = document.getElementById('name').value;
+            
+            if (!employeeName) {
+                document.getElementById('balanceCard').style.display = 'none';
+                return;
+            }
+            
+            // إظهار بطاقة الرصيد مع التحميل
+            document.getElementById('balanceCard').style.display = 'grid';
+            document.getElementById('balanceLoading').style.display = 'block';
+            document.getElementById('balanceContent').style.display = 'none';
+            
+            // محاكاة جلب الرصيد (في المستقبل سيتم جلبها من الخادم)
+            setTimeout(() => {
+                // بيانات افتراضية للرصيد
+                const mockBalance = {
+                    'annual': 30,
+                    'sick': 15,
+                    'bereavement': 7,
+                    'hourly': 30,
+                    'maternity': 70,
+                    'paternity': 3,
+                    'unpaid': 365
+                };
+                
+                // حفظ الرصيد للموظف
+                employeeBalances[employeeName] = mockBalance;
+                
+                // عرض الرصيد
+                displayEmployeeBalance(mockBalance);
+                
+            }, 500);
+        }
+
+        // ============= عرض رصيد الموظف =============
+        function displayEmployeeBalance(balance) {
+            const balanceContent = document.getElementById('balanceContent');
+            balanceContent.style.display = 'grid';
+            balanceContent.style.gridTemplateColumns = 'repeat(auto-fit, minmax(150px, 1fr))';
+            balanceContent.style.gap = '20px';
+            
+            const leaveTypes = [
+                { key: 'annual', icon: 'fa-sun', label: 'سنوية' },
+                { key: 'sick', icon: 'fa-hospital', label: 'مرضية' },
+                { key: 'bereavement', icon: 'fa-heart', label: 'وفاة' },
+                { key: 'hourly', icon: 'fa-clock', label: 'ساعية' },
+                { key: 'maternity', icon: 'fa-baby', label: 'أمومة' },
+                { key: 'paternity', icon: 'fa-child', label: 'أبوة' },
+                { key: 'unpaid', icon: 'fa-money-bill', label: 'بلا راتب' }
+            ];
+            
+            let html = '';
+            leaveTypes.forEach(type => {
+                html += `
+                    <div class="balance-item">
+                        <i class="fas ${type.icon}"></i>
+                        <div class="label">${type.label}</div>
+                        <div class="value">${balance[type.key] || 0}</div>
+                        <div class="unit">يوم</div>
+                    </div>
+                `;
+            });
+            
+            balanceContent.innerHTML = html;
+            document.getElementById('balanceLoading').style.display = 'none';
+        }
+
+        // ============= حساب أيام الإجازة =============
+        function calculateLeaveDays() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const employeeName = document.getElementById('name').value;
+            const leaveType = document.getElementById('type').value;
+            
+            if (!startDate || !endDate || !employeeName || !leaveType) {
+                document.getElementById('leaveInfo').style.display = 'none';
+                return;
+            }
+            
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const diffTime = Math.abs(end - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            
+            document.getElementById('leaveDaysCount').textContent = diffDays + ' يوم';
+            document.getElementById('leaveInfo').style.display = 'block';
+            
+            // التحقق من الرصيد
+            const balance = employeeBalances[employeeName];
+            if (balance && balance[leaveType] !== undefined) {
+                const remaining = balance[leaveType];
+                const warningDiv = document.getElementById('balanceWarning');
+                const warningMessage = document.getElementById('warningMessage');
+                
+                if (diffDays > remaining) {
+                    warningDiv.style.display = 'block';
+                    warningMessage.innerHTML = `⚠️ تحذير: رصيدك غير كافٍ! المتبقي: ${remaining} يوم، المطلوب: ${diffDays} يوم`;
+                } else {
+                    warningDiv.style.display = 'block';
+                    warningMessage.innerHTML = `✅ الرصيد كافٍ. المتبقي بعد الإجازة: ${remaining - diffDays} يوم`;
+                    warningDiv.style.background = '#d4edda';
+                    warningDiv.style.color = '#155724';
+                }
+            }
         }
 
         // ============= تبديل اللغة =============
         function switchLanguage(lang) {
             currentLang = lang;
             
-            // تحديث أزرار اللغة
             document.getElementById('btn-ar').classList.toggle('active', lang === 'ar');
             document.getElementById('btn-en').classList.toggle('active', lang === 'en');
             
-            // تحديث النصوص
             document.querySelectorAll('[data-ar], [data-en]').forEach(element => {
                 const text = element.getAttribute(`data-${lang}`);
                 if (text) {
@@ -571,12 +807,11 @@
 
         // ============= الإرسال إلى Apps Script =============
         async function submitToGoogleAppsScript(data) {
-            
+            // رابط Apps Script الخاص بك
             const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
             
             try {
-                // محاولة الإرسال مع no-cors (للتغلب على مشكلة CORS)
-                await fetch(scriptURL, {
+                const response = await fetch(scriptURL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify(data),
@@ -585,13 +820,12 @@
                     }
                 });
                 
-                // مع no-cors لا يمكننا قراءة الرد، لكن الإرسال ناجح
-                console.log('✅ تم الإرسال بنجاح (no-cors mode)');
-                return { success: true, message: 'تم الإرسال' };
+                console.log('✅ تم الإرسال بنجاح');
+                return { success: true };
                 
             } catch (error) {
                 console.error('❌ خطأ في الإرسال:', error);
-                return { success: false, message: error.message };
+                return { success: false, error: error.message };
             }
         }
 
@@ -599,43 +833,38 @@
         function saveToLocalStorage(data) {
             try {
                 const requests = JSON.parse(localStorage.getItem('dar_leave_requests') || '[]');
-                data.localId = Date.now(); // معرف فريد
+                data.localId = Date.now();
                 data.savedAt = new Date().toISOString();
                 requests.push(data);
                 localStorage.setItem('dar_leave_requests', JSON.stringify(requests));
                 
-                // إظهار معلومات البيانات المحلية
                 document.getElementById('localDataInfo').style.display = 'block';
-                
-                console.log('💾 تم حفظ البيانات محلياً:', data);
+                console.log('💾 تم حفظ البيانات محلياً');
                 return true;
+                
             } catch (error) {
-                console.error('❌ خطأ في حفظ البيانات محلياً:', error);
+                console.error('❌ خطأ في الحفظ المحلي:', error);
                 return false;
             }
         }
 
         // ============= عرض البيانات المحلية =============
         function viewLocalData() {
-            try {
-                const requests = JSON.parse(localStorage.getItem('dar_leave_requests') || '[]');
-                if (requests.length === 0) {
-                    alert(currentLang === 'ar' ? 'لا توجد بيانات محفوظة' : 'No saved data');
-                    return;
-                }
-                
-                let message = currentLang === 'ar' ? 
-                    `عدد الطلبات المحفوظة: ${requests.length}\n\n` :
-                    `Number of saved requests: ${requests.length}\n\n`;
-                
-                requests.forEach((req, index) => {
-                    message += `${index + 1}. ${req.name} - ${req.type} (${req.startDate} → ${req.endDate})\n`;
-                });
-                
-                alert(message);
-            } catch (error) {
-                console.error('❌ خطأ في عرض البيانات:', error);
+            const requests = JSON.parse(localStorage.getItem('dar_leave_requests') || '[]');
+            if (requests.length === 0) {
+                alert(currentLang === 'ar' ? 'لا توجد بيانات محفوظة' : 'No saved data');
+                return;
             }
+            
+            let message = currentLang === 'ar' ? 
+                `عدد الطلبات المحفوظة: ${requests.length}\n\n` :
+                `Saved requests: ${requests.length}\n\n`;
+            
+            requests.forEach((req, index) => {
+                message += `${index + 1}. ${req.name} - ${req.type} (${req.startDate} → ${req.endDate})\n`;
+            });
+            
+            alert(message);
         }
 
         // ============= مسح البيانات المحلية =============
@@ -643,7 +872,7 @@
             if (confirm(currentLang === 'ar' ? 'هل تريد مسح جميع البيانات المحفوظة؟' : 'Clear all saved data?')) {
                 localStorage.removeItem('dar_leave_requests');
                 document.getElementById('localDataInfo').style.display = 'none';
-                alert(currentLang === 'ar' ? 'تم مسح جميع البيانات' : 'All data cleared');
+                alert(currentLang === 'ar' ? 'تم مسح جميع البيانات' : 'Data cleared');
             }
         }
 
@@ -651,7 +880,11 @@
         document.getElementById('leaveForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // جمع البيانات
+            // حساب عدد الأيام
+            const start = new Date(document.getElementById('startDate').value);
+            const end = new Date(document.getElementById('endDate').value);
+            const leaveDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) + 1;
+            
             const formData = {
                 dept: document.getElementById('dept').value,
                 name: document.getElementById('name').value,
@@ -659,72 +892,43 @@
                 type: document.getElementById('type').value,
                 startDate: document.getElementById('startDate').value,
                 endDate: document.getElementById('endDate').value,
+                leaveDays: leaveDays,
                 reason: document.getElementById('reason').value,
                 submittedAt: new Date().toISOString()
             };
             
             // التحقق من البيانات
-            if (!formData.name || formData.name === '') {
-                showMessage('error', currentLang === 'ar' ? 'الرجاء اختيار الموظف' : 'Please select an employee');
+            if (!formData.name) {
+                showMessage('error', currentLang === 'ar' ? 'الرجاء اختيار الموظف' : 'Please select employee');
                 return;
             }
             
-            if (!formData.email) {
-                showMessage('error', currentLang === 'ar' ? 'البريد الإلكتروني غير متوفر' : 'Email not available');
-                return;
-            }
-            
-            // إيقاف زر الإرسال وعرض التحميل
+            // إظهار التحميل
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('loader').style.display = 'block';
             hideAllMessages();
             
-            // 1. حفظ البيانات محلياً أولاً (ضمان)
+            // حفظ محلياً
             const savedLocally = saveToLocalStorage(formData);
             
-            // 2. محاولة الإرسال لـ Google Apps Script
-            let googleResult = { success: false, message: '' };
+            // إرسال للخادم
+            await submitToGoogleAppsScript(formData);
             
-            try {
-                googleResult = await submitToGoogleAppsScript(formData);
-            } catch (error) {
-                console.error('❌ خطأ في عملية الإرسال:', error);
-            }
+            // إظهار النجاح
+            showMessage('success', currentLang === 'ar' ? 
+                'تم إرسال طلب الإجازة بنجاح!' : 
+                'Leave request submitted successfully!');
             
-            // 3. إظهار النتيجة
-            if (savedLocally) {
-                // إذا تم الحفظ محلياً، نعرض رسالة نجاح حتى لو فشل الإرسال للـ Google
-                showMessage('success', currentLang === 'ar' ? 
-                    'تم حفظ طلبك بنجاح. سيتم إرساله تلقائياً عند الاتصال.' : 
-                    'Request saved successfully. Will be sent automatically when online.');
-                
-                // إعادة تعيين النموذج
-                document.getElementById('leaveForm').reset();
-                setupDates();
-                updateEmployees();
-                
-                // إخفاء الرسالة بعد 5 ثواني
-                setTimeout(() => {
-                    hideMessage('success');
-                }, 5000);
-                
-            } else {
-                // إذا فشل حتى الحفظ المحلي
-                showMessage('error', currentLang === 'ar' ? 
-                    'فشل حفظ الطلب. يرجى المحاولة مرة أخرى.' : 
-                    'Failed to save request. Please try again.');
-            }
+            // إعادة تعيين النموذج
+            document.getElementById('leaveForm').reset();
+            setupDates();
+            updateEmployees();
+            document.getElementById('balanceCard').style.display = 'none';
+            document.getElementById('leaveInfo').style.display = 'none';
             
-            // إعادة تفعيل زر الإرسال وإخفاء التحميل
+            // إعادة تفعيل الزر
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('loader').style.display = 'none';
-            
-            // تسجيل المعلومات في الكونسول
-            console.log('📊 نتيجة الإرسال:', {
-                savedLocally,
-                googleResult,
-                formData
-            });
         });
 
         // ============= دوال مساعدة =============
@@ -734,6 +938,10 @@
             if (element) {
                 element.querySelector('span').textContent = text;
                 element.style.display = 'block';
+                
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
             }
         }
 
@@ -777,14 +985,17 @@
             const startDate = new Date(this.value);
             const minEndDate = new Date(startDate);
             minEndDate.setDate(minEndDate.getDate() + 1);
-            const minEndDateStr = minEndDate.toISOString().split('T')[0];
-            
-            document.getElementById('endDate').min = minEndDateStr;
+            document.getElementById('endDate').min = minEndDate.toISOString().split('T')[0];
             
             if (new Date(document.getElementById('endDate').value) < minEndDate) {
-                document.getElementById('endDate').value = minEndDateStr;
+                document.getElementById('endDate').value = minEndDate.toISOString().split('T')[0];
             }
+            
+            calculateLeaveDays();
         });
+
+        document.getElementById('endDate').addEventListener('change', calculateLeaveDays);
+        document.getElementById('type').addEventListener('change', calculateLeaveDays);
 
         document.getElementById('btn-ar').addEventListener('click', () => switchLanguage('ar'));
         document.getElementById('btn-en').addEventListener('click', () => switchLanguage('en'));
@@ -795,25 +1006,12 @@
             switchLanguage('ar');
             updateEmployees();
             
-            // تحقق من وجود بيانات محلية
             const localData = JSON.parse(localStorage.getItem('dar_leave_requests') || '[]');
             if (localData.length > 0) {
                 document.getElementById('localDataInfo').style.display = 'block';
             }
             
-            // إضافة تأثيرات للحقول
-            const inputs = document.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'scale(1.01)';
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'scale(1)';
-                });
-            });
-            
-            console.log('🚀 نظام طلبات الإجازة جاهز للاستخدام!');
+            console.log('🚀 نظام طلبات الإجازة v3.0 جاهز للاستخدام');
         });
     </script>
 </body>
