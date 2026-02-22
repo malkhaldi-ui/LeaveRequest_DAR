@@ -84,7 +84,123 @@
             margin-bottom: 30px;
         }
 
-        /* التبديل بين اللغات */
+        /* ========== قسم رمز الأمان ========== */
+        .security-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .security-section h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .security-section h3 i {
+            color: var(--accent);
+        }
+
+        .security-section p {
+            opacity: 0.9;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .security-input-group {
+            display: flex;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .security-input-group input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            text-align: center;
+            direction: ltr;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .security-input-group input:focus {
+            outline: 3px solid var(--accent);
+        }
+
+        .security-btn {
+            background: var(--accent);
+            color: var(--dark);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .security-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .security-btn i {
+            font-size: 18px;
+        }
+
+        .security-error {
+            color: #ff6b6b;
+            margin-top: 15px;
+            font-weight: bold;
+            display: none;
+        }
+
+        /* ========== النموذج الرئيسي (مقفل في البداية) ========== */
+        .main-form {
+            opacity: 0.5;
+            pointer-events: none;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .main-form.unlocked {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .main-form::before {
+            content: '🔒 قم بإدخال رمز الأمان أولاً';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .main-form.unlocked::before {
+            display: none;
+        }
+
+        /* باقي التنسيقات */
         .lang-tabs {
             display: flex;
             justify-content: center;
@@ -113,7 +229,6 @@
             background: #f8f9fa;
         }
 
-        /* مجموعة الحقول */
         .form-group {
             margin-bottom: 25px;
         }
@@ -156,81 +271,6 @@
             font-family: inherit;
         }
 
-        /* بطاقة الرصيد */
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        }
-
-        .balance-item {
-            text-align: center;
-            padding: 15px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
-        }
-
-        .balance-item i {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: var(--accent);
-        }
-
-        .balance-item .label {
-            font-size: 14px;
-            opacity: 0.9;
-            margin-bottom: 5px;
-        }
-
-        .balance-item .value {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .balance-item .unit {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-
-        .balance-loading {
-            text-align: center;
-            padding: 20px;
-            color: var(--primary);
-        }
-
-        /* معلومات الإجازة المحسوبة */
-        .leave-info {
-            background: #e8f4f8;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border-right: 4px solid var(--info);
-            display: none;
-        }
-
-        .leave-info .days-count {
-            font-size: 20px;
-            font-weight: bold;
-            color: var(--info);
-        }
-
-        .leave-info .warning {
-            color: var(--warning);
-            background: #fff3cd;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        /* زر الإرسال */
         .submit-btn {
             background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%);
             color: white;
@@ -254,17 +294,12 @@
             box-shadow: 0 6px 20px rgba(60, 98, 85, 0.3);
         }
 
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
         .submit-btn:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none !important;
         }
 
-        /* رسائل التنبيه */
         .alert {
             padding: 20px;
             border-radius: 10px;
@@ -272,18 +307,6 @@
             text-align: center;
             font-weight: 600;
             display: none;
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         .alert-success {
@@ -298,19 +321,6 @@
             border: 1px solid #f5c6cb;
         }
 
-        .alert-warning {
-            background: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeaa7;
-        }
-
-        .alert-info {
-            background: #d1ecf1;
-            color: var(--info);
-            border: 1px solid #bee5eb;
-        }
-
-        /* مؤشر التحميل */
         .loader {
             text-align: center;
             margin: 20px 0;
@@ -332,7 +342,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* الفوتر */
         .footer {
             text-align: center;
             padding: 30px 0;
@@ -342,83 +351,18 @@
             margin-top: 40px;
         }
 
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
-        }
-
-        .footer a:hover {
-            text-decoration: underline;
-        }
-
-        /* معلومات البيانات المحلية */
-        .local-data-info {
-            background: #e8f5e8;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #2d5016;
-            border: 1px solid #c3e6cb;
-            display: none;
-        }
-
-        .local-data-info button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-
-        /* متجاوب */
         @media (max-width: 768px) {
             .container {
                 padding: 0 15px;
             }
-            
             .card {
                 padding: 25px;
             }
-            
             .header h1 {
                 font-size: 26px;
             }
-            
-            .lang-btn {
-                padding: 10px 20px;
-                font-size: 14px;
-            }
-            
-            .form-group input,
-            .form-group select,
-            .form-group textarea {
-                padding: 12px;
-            }
-            
-            .balance-card {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .header {
-                padding: 20px 0;
-            }
-            
-            .card {
-                padding: 20px;
-            }
-            
-            .lang-tabs {
+            .security-input-group {
                 flex-direction: column;
-            }
-            
-            .balance-card {
-                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -436,205 +380,204 @@
 
         <!-- بطاقة النموذج -->
         <div class="card">
-            <h2 style="text-align: center; color: var(--primary); margin-bottom: 30px; font-size: 28px;">
-                <i class="fas fa-file-alt"></i> نظام طلبات الإجازة
-            </h2>
-            
-            <!-- تبادل اللغات -->
-            <div class="lang-tabs">
-                <button class="lang-btn active" id="btn-ar">العربية <i class="fas fa-language"></i></button>
-                <button class="lang-btn" id="btn-en">English <i class="fas fa-language"></i></button>
-            </div>
-
-            <!-- بطاقة عرض الرصيد -->
-            <div class="balance-card" id="balanceCard" style="display: none;">
-                <div class="balance-loading" id="balanceLoading">
-                    <i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...
+            <!-- ========== قسم رمز الأمان ========== -->
+            <div class="security-section">
+                <h3><i class="fas fa-shield-alt"></i> رمز الأمان</h3>
+                <p>لأسباب أمنية، الرجاء إدخال الرمز الخاص بك لفتح نموذج الطلب</p>
+                
+                <div class="security-input-group">
+                    <input type="password" id="securityCode" placeholder="أدخل الرمز السري" maxlength="6" onkeypress="handleEnterKey(event)">
+                    <button class="security-btn" onclick="verifySecurityCode()">
+                        <i class="fas fa-lock-open"></i>
+                        دخول
+                    </button>
                 </div>
-                <div id="balanceContent" style="display: none; width: 100%;">
-                    <!-- سيتم تعبئة الرصيد هنا -->
+                
+                <div id="securityError" class="security-error">
+                    <i class="fas fa-exclamation-circle"></i> رمز خاطئ! الرجاء المحاولة مرة أخرى
                 </div>
             </div>
 
-            <!-- معلومات الإجازة المحسوبة -->
-            <div class="leave-info" id="leaveInfo">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span><i class="fas fa-calendar-check"></i> عدد أيام الإجازة:</span>
-                    <span class="days-count" id="leaveDaysCount">0 يوم</span>
-                </div>
-                <div class="warning" id="balanceWarning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <span id="warningMessage"></span>
-                </div>
-            </div>
-
-            <!-- نموذج طلب الإجازة -->
-            <form id="leaveForm">
-                <!-- القسم -->
-                <div class="form-group">
-                    <label for="dept"><i class="fas fa-building"></i> <span data-ar="القسم" data-en="Department">القسم</span></label>
-                    <select id="dept" name="dept" required onchange="updateEmployees()">
-                        <option value="" data-ar="اختر القسم" data-en="Select Department">اختر القسم</option>
-                        <option value="monitoring" data-ar="المراقبة والتقييم" data-en="Monitoring & Evaluation">المراقبة والتقييم</option>
-                        <option value="programs" data-ar="البرامج" data-en="Programs">البرامج</option>
-                        <option value="operations" data-ar="العمليات" data-en="Operations">العمليات</option>
-                        <option value="media" data-ar="الإعلام" data-en="Media">الإعلام</option>
-                        <option value="partnerships" data-ar="الشراكات" data-en="Partnerships">الشراكات</option>
-                        <option value="executive" data-ar="الإدارة التنفيذية" data-en="Executive Management">الإدارة التنفيذية</option>
-                    </select>
+            <!-- ========== النموذج الرئيسي (مقفل في البداية) ========== -->
+            <div id="mainForm" class="main-form">
+                <h2 style="text-align: center; color: var(--primary); margin-bottom: 30px; font-size: 28px;">
+                    <i class="fas fa-file-alt"></i> نظام طلبات الإجازة
+                </h2>
+                
+                <!-- تبادل اللغات -->
+                <div class="lang-tabs">
+                    <button class="lang-btn active" id="btn-ar">العربية <i class="fas fa-language"></i></button>
+                    <button class="lang-btn" id="btn-en">English <i class="fas fa-language"></i></button>
                 </div>
 
-                <!-- اسم الموظف -->
-                <div class="form-group">
-                    <label for="name"><i class="fas fa-user"></i> <span data-ar="اسم الموظف" data-en="Employee Name">اسم الموظف</span></label>
-                    <select id="name" name="name" required onchange="loadEmployeeBalance()">
-                        <option value="" data-ar="اختر الموظف" data-en="Select Employee">اختر الموظف</option>
-                    </select>
+                <!-- نموذج طلب الإجازة -->
+                <form id="leaveForm">
+                    <div class="form-group">
+                        <label for="dept"><i class="fas fa-building"></i> <span data-ar="القسم" data-en="Department">القسم</span></label>
+                        <input type="text" id="dept" name="dept" readonly class="readonly-field">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name"><i class="fas fa-user"></i> <span data-ar="اسم الموظف" data-en="Employee Name">اسم الموظف</span></label>
+                        <input type="text" id="name" name="name" readonly class="readonly-field">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email"><i class="fas fa-envelope"></i> <span data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</span></label>
+                        <input type="email" id="email" name="email" required readonly>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="type"><i class="fas fa-calendar-alt"></i> <span data-ar="نوع الإجازة" data-en="Leave Type">نوع الإجازة</span></label>
+                        <select id="type" name="type" required>
+                            <option value="" data-ar="اختر نوع الإجازة" data-en="Select Leave Type">اختر نوع الإجازة</option>
+                            <option value="annual" data-ar="إجازة سنوية" data-en="Annual Leave">إجازة سنوية</option>
+                            <option value="sick" data-ar="إجازة مرضية" data-en="Sick Leave">إجازة مرضية</option>
+                            <option value="bereavement" data-ar="إجازة وفاة" data-en="Bereavement Leave">إجازة وفاة</option>
+                            <option value="hourly" data-ar="إجازة ساعية" data-en="Hourly Leave">إجازة ساعية</option>
+                            <option value="maternity" data-ar="إجازة أمومة" data-en="Maternity Leave">إجازة أمومة</option>
+                            <option value="paternity" data-ar="إجازة أبوة" data-en="Paternity Leave">إجازة أبوة</option>
+                            <option value="unpaid" data-ar="إجازة بلا راتب" data-en="Unpaid Leave">إجازة بلا راتب</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="startDate"><i class="fas fa-calendar-plus"></i> <span data-ar="تاريخ البدء" data-en="Start Date">تاريخ البدء</span></label>
+                        <input type="date" id="startDate" name="startDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endDate"><i class="fas fa-calendar-minus"></i> <span data-ar="تاريخ الانتهاء" data-en="End Date">تاريخ الانتهاء</span></label>
+                        <input type="date" id="endDate" name="endDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reason"><i class="fas fa-comment-alt"></i> <span data-ar="السبب" data-en="Reason">السبب</span></label>
+                        <textarea id="reason" name="reason" required></textarea>
+                    </div>
+
+                    <div class="loader" id="loader">
+                        <div class="spinner"></div>
+                        <p data-ar="جاري إرسال الطلب..." data-en="Submitting request...">جاري إرسال الطلب...</p>
+                    </div>
+
+                    <div class="alert alert-danger" id="errorMessage">
+                        <i class="fas fa-exclamation-circle"></i> 
+                        <span data-ar="حدث خطأ، يرجى المحاولة مرة أخرى" data-en="An error occurred, please try again">حدث خطأ، يرجى المحاولة مرة أخرى</span>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i>
+                        <span data-ar="إرسال الطلب" data-en="Submit Request">إرسال الطلب</span>
+                    </button>
+                </form>
+
+                <div class="alert alert-success" id="successMessage">
+                    <i class="fas fa-check-circle"></i> 
+                    <span data-ar="تم إرسال طلب الإجازة بنجاح!" data-en="Leave request submitted successfully!">تم إرسال طلب الإجازة بنجاح!</span>
                 </div>
-
-                <!-- البريد الإلكتروني -->
-                <div class="form-group">
-                    <label for="email"><i class="fas fa-envelope"></i> <span data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</span></label>
-                    <input type="email" id="email" name="email" required readonly 
-                           data-ar-placeholder="سيتم تعبئته تلقائياً" 
-                           data-en-placeholder="Will be filled automatically">
-                </div>
-
-                <!-- نوع الإجازة -->
-                <div class="form-group">
-                    <label for="type"><i class="fas fa-calendar-alt"></i> <span data-ar="نوع الإجازة" data-en="Leave Type">نوع الإجازة</span></label>
-                    <select id="type" name="type" required onchange="calculateLeaveDays()">
-                        <option value="" data-ar="اختر نوع الإجازة" data-en="Select Leave Type">اختر نوع الإجازة</option>
-                        <option value="annual" data-ar="إجازة سنوية" data-en="Annual Leave">إجازة سنوية</option>
-                        <option value="sick" data-ar="إجازة مرضية" data-en="Sick Leave">إجازة مرضية</option>
-                        <option value="bereavement" data-ar="إجازة وفاة" data-en="Bereavement Leave">إجازة وفاة</option>
-                        <option value="hourly" data-ar="إجازة ساعية" data-en="Hourly Leave">إجازة ساعية</option>
-                        <option value="maternity" data-ar="إجازة أمومة" data-en="Maternity Leave">إجازة أمومة</option>
-                        <option value="paternity" data-ar="إجازة أبوة" data-en="Paternity Leave">إجازة أبوة</option>
-                        <option value="unpaid" data-ar="إجازة بلا راتب" data-en="Unpaid Leave">إجازة بلا راتب</option>
-                    </select>
-                </div>
-
-                <!-- تاريخ البدء -->
-                <div class="form-group">
-                    <label for="startDate"><i class="fas fa-calendar-plus"></i> <span data-ar="تاريخ البدء" data-en="Start Date">تاريخ البدء</span></label>
-                    <input type="date" id="startDate" name="startDate" required onchange="calculateLeaveDays()">
-                </div>
-
-                <!-- تاريخ الانتهاء -->
-                <div class="form-group">
-                    <label for="endDate"><i class="fas fa-calendar-minus"></i> <span data-ar="تاريخ الانتهاء" data-en="End Date">تاريخ الانتهاء</span></label>
-                    <input type="date" id="endDate" name="endDate" required onchange="calculateLeaveDays()">
-                </div>
-
-                <!-- السبب -->
-                <div class="form-group">
-                    <label for="reason"><i class="fas fa-comment-alt"></i> <span data-ar="السبب" data-en="Reason">السبب</span></label>
-                    <textarea id="reason" name="reason" required 
-                              data-ar-placeholder="أدخل سبب الإجازة..." 
-                              data-en-placeholder="Enter leave reason..."></textarea>
-                </div>
-
-                <!-- مؤشر التحميل -->
-                <div class="loader" id="loader">
-                    <div class="spinner"></div>
-                    <p data-ar="جاري إرسال الطلب..." data-en="Submitting request...">جاري إرسال الطلب...</p>
-                </div>
-
-                <!-- رسائل الخطأ -->
-                <div class="alert alert-danger" id="errorMessage">
-                    <i class="fas fa-exclamation-circle"></i> 
-                    <span data-ar="حدث خطأ، يرجى المحاولة مرة أخرى" data-en="An error occurred, please try again">حدث خطأ، يرجى المحاولة مرة أخرى</span>
-                </div>
-
-                <!-- زر الإرسال -->
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <i class="fas fa-paper-plane"></i>
-                    <span data-ar="إرسال الطلب" data-en="Submit Request">إرسال الطلب</span>
-                </button>
-            </form>
-
-            <!-- رسالة النجاح -->
-            <div class="alert alert-success" id="successMessage">
-                <i class="fas fa-check-circle"></i> 
-                <span data-ar="تم إرسال طلب الإجازة بنجاح!" data-en="Leave request submitted successfully!">تم إرسال طلب الإجازة بنجاح!</span>
-            </div>
-
-            <!-- معلومات البيانات المحلية -->
-            <div class="local-data-info" id="localDataInfo">
-                <i class="fas fa-info-circle"></i>
-                <span data-ar="البيانات محفوظة على هذا الجهاز. سيتم إرسالها عند اتصال النت." 
-                      data-en="Data saved locally. Will be sent when online.">
-                    البيانات محفوظة على هذا الجهاز. سيتم إرسالها عند اتصال النت.
-                </span>
-                <button onclick="viewLocalData()" data-ar="عرض البيانات" data-en="View Data">عرض البيانات</button>
-                <button onclick="clearLocalData()" data-ar="مسح الكل" data-en="Clear All" style="background: var(--danger); margin-left: 5px;">مسح الكل</button>
             </div>
         </div>
 
         <!-- الفوتر -->
         <footer class="footer">
             <p>© 2026 دار للسلام والازدهار. جميع الحقوق محفوظة.</p>
-            <p>نظام طلبات الإجازة v3.0 | تطوير بواسطة قسم المراقبة والتقييم</p>
-            <p><a href="#" onclick="showDebugInfo()"><i class="fas fa-bug"></i> معلومات التصحيح</a></p>
+            <p>نظام طلبات الإجازة v4.0  </p>
         </footer>
     </div>
 
-    <!-- نافذة معلومات التصحيح -->
-    <div id="debugModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; padding: 20px;">
-        <div style="background: white; max-width: 800px; margin: 50px auto; padding: 30px; border-radius: 15px; max-height: 80vh; overflow-y: auto;">
-            <h2 style="color: var(--primary); margin-bottom: 20px;"><i class="fas fa-bug"></i> معلومات التصحيح</h2>
-            <pre id="debugInfo" style="background: #f8f9fa; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; white-space: pre-wrap; word-break: break-all;"></pre>
-            <button onclick="hideDebugInfo()" style="margin-top: 20px; padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer;">إغلاق</button>
-        </div>
-    </div>
-
     <script>
-        // ============= البيانات الأساسية =============
-        const employeesData = {
-            monitoring: [
-                { name: "مهيدي", email: "malkhaldi@dar.ngo" },
-                { name: "نانسي", email: "nhallak@dar.ngo " }
-            ],
-            programs: [
-                { name: "سلاف أبو حمدان", email: "shamdan@dar.ngo" },
-                { name: "رغد العبو", email: "ralabo@dar.ngo" },
-                { name: "سيلفارت سلوم", email: "ssalloum@dar.ngo" },
-                { name: "محمد الهادي", email: "malhadi@dar.ngo" },
-                { name: "خناف شمو", email: "kshamo@dar.ngo" },
-                { name: "عبد الحميد الحسين", email: "aALHUSSAIN@dar.ngo" },
-                { name: "هند الفارس", email: "hAlfares@dar.ngo" }
-            ],
-            operations: [
-                { name: "آلان خليل", email: "akhalil@dar.ngo" },
-                { name: "هبة المناديلي", email: "hr@dar.ngo" },
-                { name: "بتول فلفلة", email: "bfelfleh@dar.ngo" },
-                { name: "عبد القادر سباغ", email: "asabbagh@dar.ngo" },
-                { name: "لادي حامدي", email: "lHamdi@dar.ngo" },
-                { name: "محمد بدور", email: "mbaddou@dar.ngo" },
-                { name: "رشا دهنة", email: "rdehneh@dar.ngo" },
-                { name: "إبراهيم شيخ نبي", email: "inabi@dar.ngo" },
-                { name: "مالك أومو", email: "momo@dar.ngo" }
-            ],
-            media: [
-                { name: "حازم الزير", email: "Hmohammad@dar.ngo" }
-            ],
-            partnerships: [
-                { name: "فيلكس", email: "fLegrand@dar.ngo" },
-                { name: "ريعان العاني", email: "ralani@dar.ngo" },
-                { name: "عصمت بكر", email: "eBaker@dar.ngo" }
-            ],
-            executive: [
-                { name: "سمر قطان", email: "skattan@dar.ngo" }
-            ]
+        // ============= قائمة الموظفين مع رموز الأمان =============
+        const employeesWithCodes = {
+            // إدخال البيانات على الشكل: "الاسم": { email, dept, code }
+            "مهيدي الخالدي": { email: "malkhaldi@dar.ngo", dept: "المراقبة والتقييم", code: "ME_001" },
+            "نانسي حلاق": { email: "nancy@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" },
+            "سلاف أبو حمدان": { email: "shamdan@dar.ngo", dept: "البرامج", code: "Pro_202" },
+            "رغد العبو": { email: "ralabo@dar.ngo", dept: "البرامج", code: "Pro_020" },
+            "سيلفارت سلوم": { email: "ssalloum@dar.ngo", dept: "البرامج", code: "Pro_S26" },
+            "محمد الهادي": { email: "malhadi@dar.ngo", dept: "البرامج", code: "Pro_M62" },
+            "خناف شمو": { email: "kshamo@dar.ngo", dept: "البرامج", code: "Pro_X002" },
+            "عبد الحميد الحسين": { email: "aALHUSSAIN@dar.ngo", dept: "البرامج", code: "Pro_A89" },
+            "هند الفارس": { email: "hAlfares@dar.ngo", dept: "البرامج", code: "Pro_H55" },
+            "آلان خليل": { email: "akhalil@dar.ngo", dept: "العمليات", code: "Op_A159" },
+            "هبة المناديلي": { email: "hr@dar.ngo", dept: "العمليات", code: "Op_H753" },
+            "عبد القادر سباغ": { email: "asabbagh@dar.ngo", dept: "العمليات", code: "Op_A654" },
+            "لادي حاممدي": { email: "lHamdi@dar.ngo", dept: "العمليات", code: "Op_L351" },
+            "محمد بدور": { email: "mbaddou@dar.ngo", dept: "العمليات", code: "Op_M957" },
+            "رشا دهنة": { email: "rdehneh@dar.ngo", dept: "العمليات", code: "Op_R684" },
+            "إ[راهيم شيخ نبي": { email: "inabi@dar.ngo", dept: "العمليات", code: "Op_IB132" },
+            "مالك أومو": { email: "momo@dar.ngo", dept: "العمليات", code: "Op_M095" },
+            "حازم الزير": { email: "Hmohammad@dar.ngo", dept: "الإعلام", code: "M_H268" },
+            "فيلكس": { email: "fLegrand@dar.ngo", dept: "الشراكات", code: "Pa_F624" },
+            "ريعان لعاني": { email: "ralani@dar.ngo", dept: "الشراكات", code: "Pa_R978" },
+            "عصمت بكر": { email: "eBaker@dar.ngo", dept: "الشراكات", code: "Pa_E990" },
+            "سمر قطان": { email: "skattan@dar.ngo", dept: "الإدارة التنفيذية", code: "CEO_S111" }
         };
 
-        // بيانات رصيد الموظفين (مؤقتة - سيتم جلبها من الخادم لاحقاً)
-        let employeeBalances = {};
-
         let currentLang = 'ar';
+        let currentEmployee = null;
 
-        // ============= تهيئة التواريخ =============
+        // ============= التحقق من رمز الأمان =============
+        function verifySecurityCode() {
+            const codeInput = document.getElementById('securityCode').value.trim();
+            const securityError = document.getElementById('securityError');
+            
+            // البحث عن الموظف الذي رمزه مطابق
+            let foundEmployee = null;
+            for (const [name, data] of Object.entries(employeesWithCodes)) {
+                if (data.code === codeInput) {
+                    foundEmployee = { name, ...data };
+                    break;
+                }
+            }
+            
+            if (foundEmployee) {
+                // رمز صحيح - فتح النموذج
+                securityError.style.display = 'none';
+                document.getElementById('mainForm').classList.add('unlocked');
+                currentEmployee = foundEmployee;
+                
+                // تفعيل جميع حقول النموذج
+                enableFormFields(true);
+                
+                // تعبئة بيانات الموظف تلقائياً (قسم واسم فقط - للقراءة)
+                document.getElementById('dept').value = foundEmployee.dept;
+                document.getElementById('name').value = foundEmployee.name;
+                document.getElementById('email').value = foundEmployee.email;
+                
+                // رسالة ترحيب
+                alert(`✅ مرحباً ${foundEmployee.name}!\nتم فتح النموذج بنجاح.`);
+                
+            } else {
+                // رمز خاطئ
+                securityError.style.display = 'block';
+                document.getElementById('securityCode').value = '';
+                document.getElementById('securityCode').focus();
+            }
+        }
+
+        // دالة للدخول بالضغط على Enter
+        function handleEnterKey(event) {
+            if (event.key === 'Enter') {
+                verifySecurityCode();
+            }
+        }
+
+        // تفعيل/تعطيل حقول النموذج
+        function enableFormFields(enabled) {
+            const fields = [
+                'type', 'startDate', 'endDate', 'reason', 'submitBtn'
+            ];
+            
+            fields.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.disabled = !enabled;
+                }
+            });
+        }
+
+        // ============= دوال النموذج الأساسية =============
         function setupDates() {
             const today = new Date().toISOString().split('T')[0];
             const tomorrow = new Date();
@@ -647,140 +590,6 @@
             document.getElementById('endDate').min = tomorrowStr;
         }
 
-        // ============= تحديث الموظفين =============
-        function updateEmployees() {
-            const dept = document.getElementById('dept').value;
-            const nameSelect = document.getElementById('name');
-            const emailInput = document.getElementById('email');
-            
-            nameSelect.innerHTML = '<option value="" data-ar="اختر الموظف" data-en="Select Employee">' + 
-                                  (currentLang === 'ar' ? 'اختر الموظف' : 'Select Employee') + '</option>';
-            emailInput.value = '';
-            
-            if (dept && employeesData[dept]) {
-                employeesData[dept].forEach(employee => {
-                    const option = document.createElement('option');
-                    option.value = employee.name;
-                    option.textContent = employee.name;
-                    option.setAttribute('data-email', employee.email);
-                    nameSelect.appendChild(option);
-                });
-            }
-            
-            // إخفاء الرصيد عند تغيير القسم
-            document.getElementById('balanceCard').style.display = 'none';
-            document.getElementById('leaveInfo').style.display = 'none';
-        }
-
-        // ============= تحميل رصيد الموظف =============
-        function loadEmployeeBalance() {
-            const employeeName = document.getElementById('name').value;
-            
-            if (!employeeName) {
-                document.getElementById('balanceCard').style.display = 'none';
-                return;
-            }
-            
-            // إظهار بطاقة الرصيد مع التحميل
-            document.getElementById('balanceCard').style.display = 'grid';
-            document.getElementById('balanceLoading').style.display = 'block';
-            document.getElementById('balanceContent').style.display = 'none';
-            
-            // محاكاة جلب الرصيد (في المستقبل سيتم جلبها من الخادم)
-            setTimeout(() => {
-                // بيانات افتراضية للرصيد
-                const mockBalance = {
-                    'annual': 30,
-                    'sick': 15,
-                    'bereavement': 7,
-                    'hourly': 30,
-                    'maternity': 70,
-                    'paternity': 3,
-                    'unpaid': 365
-                };
-                
-                // حفظ الرصيد للموظف
-                employeeBalances[employeeName] = mockBalance;
-                
-                // عرض الرصيد
-                displayEmployeeBalance(mockBalance);
-                
-            }, 500);
-        }
-
-        // ============= عرض رصيد الموظف =============
-        function displayEmployeeBalance(balance) {
-            const balanceContent = document.getElementById('balanceContent');
-            balanceContent.style.display = 'grid';
-            balanceContent.style.gridTemplateColumns = 'repeat(auto-fit, minmax(150px, 1fr))';
-            balanceContent.style.gap = '20px';
-            
-            const leaveTypes = [
-                { key: 'annual', icon: 'fa-sun', label: 'سنوية' },
-                { key: 'sick', icon: 'fa-hospital', label: 'مرضية' },
-                { key: 'bereavement', icon: 'fa-heart', label: 'وفاة' },
-                { key: 'hourly', icon: 'fa-clock', label: 'ساعية' },
-                { key: 'maternity', icon: 'fa-baby', label: 'أمومة' },
-                { key: 'paternity', icon: 'fa-child', label: 'أبوة' },
-                { key: 'unpaid', icon: 'fa-money-bill', label: 'بلا راتب' }
-            ];
-            
-            let html = '';
-            leaveTypes.forEach(type => {
-                html += `
-                    <div class="balance-item">
-                        <i class="fas ${type.icon}"></i>
-                        <div class="label">${type.label}</div>
-                        <div class="value">${balance[type.key] || 0}</div>
-                        <div class="unit">يوم</div>
-                    </div>
-                `;
-            });
-            
-            balanceContent.innerHTML = html;
-            document.getElementById('balanceLoading').style.display = 'none';
-        }
-
-        // ============= حساب أيام الإجازة =============
-        function calculateLeaveDays() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            const employeeName = document.getElementById('name').value;
-            const leaveType = document.getElementById('type').value;
-            
-            if (!startDate || !endDate || !employeeName || !leaveType) {
-                document.getElementById('leaveInfo').style.display = 'none';
-                return;
-            }
-            
-            const start = new Date(startDate);
-            const end = new Date(endDate);
-            const diffTime = Math.abs(end - start);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-            
-            document.getElementById('leaveDaysCount').textContent = diffDays + ' يوم';
-            document.getElementById('leaveInfo').style.display = 'block';
-            
-            // التحقق من الرصيد
-            const balance = employeeBalances[employeeName];
-            if (balance && balance[leaveType] !== undefined) {
-                const remaining = balance[leaveType];
-                const warningDiv = document.getElementById('balanceWarning');
-                const warningMessage = document.getElementById('warningMessage');
-                
-                if (diffDays > remaining) {
-                    warningDiv.style.display = 'block';
-                    warningMessage.innerHTML = `⚠️ تحذير: رصيدك غير كافٍ! المتبقي: ${remaining} يوم، المطلوب: ${diffDays} يوم`;
-                } else {
-                    warningDiv.style.display = 'block';
-                    warningMessage.innerHTML = `✅ الرصيد كافٍ. المتبقي بعد الإجازة: ${remaining - diffDays} يوم`;
-                    warningDiv.style.background = '#d4edda';
-                    warningDiv.style.color = '#155724';
-                }
-            }
-        }
-
-        // ============= تبديل اللغة =============
         function switchLanguage(lang) {
             currentLang = lang;
             
@@ -806,74 +615,21 @@
             document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
         }
 
-        // ============= الإرسال إلى Apps Script =============
+        // ============= الإرسال =============
         async function submitToGoogleAppsScript(data) {
-            // رابط Apps Script الخاص بك
             const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
             
             try {
-                const response = await fetch(scriptURL, {
+                await fetch(scriptURL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify(data),
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Content-Type': 'application/json' }
                 });
-                
-                console.log('✅ تم الإرسال بنجاح');
                 return { success: true };
-                
             } catch (error) {
                 console.error('❌ خطأ في الإرسال:', error);
-                return { success: false, error: error.message };
-            }
-        }
-
-        // ============= حفظ البيانات محلياً =============
-        function saveToLocalStorage(data) {
-            try {
-                const requests = JSON.parse(localStorage.getItem('dar_leave_requests') || '[]');
-                data.localId = Date.now();
-                data.savedAt = new Date().toISOString();
-                requests.push(data);
-                localStorage.setItem('dar_leave_requests', JSON.stringify(requests));
-                
-                document.getElementById('localDataInfo').style.display = 'block';
-                console.log('💾 تم حفظ البيانات محلياً');
-                return true;
-                
-            } catch (error) {
-                console.error('❌ خطأ في الحفظ المحلي:', error);
-                return false;
-            }
-        }
-
-        // ============= عرض البيانات المحلية =============
-        function viewLocalData() {
-            const requests = JSON.parse(localStorage.getItem('dar_leave_requests') || '[]');
-            if (requests.length === 0) {
-                alert(currentLang === 'ar' ? 'لا توجد بيانات محفوظة' : 'No saved data');
-                return;
-            }
-            
-            let message = currentLang === 'ar' ? 
-                `عدد الطلبات المحفوظة: ${requests.length}\n\n` :
-                `Saved requests: ${requests.length}\n\n`;
-            
-            requests.forEach((req, index) => {
-                message += `${index + 1}. ${req.name} - ${req.type} (${req.startDate} → ${req.endDate})\n`;
-            });
-            
-            alert(message);
-        }
-
-        // ============= مسح البيانات المحلية =============
-        function clearLocalData() {
-            if (confirm(currentLang === 'ar' ? 'هل تريد مسح جميع البيانات المحفوظة؟' : 'Clear all saved data?')) {
-                localStorage.removeItem('dar_leave_requests');
-                document.getElementById('localDataInfo').style.display = 'none';
-                alert(currentLang === 'ar' ? 'تم مسح جميع البيانات' : 'Data cleared');
+                return { success: false };
             }
         }
 
@@ -881,107 +637,45 @@
         document.getElementById('leaveForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // حساب عدد الأيام
-            const start = new Date(document.getElementById('startDate').value);
-            const end = new Date(document.getElementById('endDate').value);
-            const leaveDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) + 1;
+            if (!currentEmployee) {
+                alert('الرجاء إدخال رمز الأمان أولاً');
+                return;
+            }
             
             const formData = {
-                dept: document.getElementById('dept').value,
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
+                name: currentEmployee.name,
+                email: currentEmployee.email,
+                dept: currentEmployee.dept,
                 type: document.getElementById('type').value,
                 startDate: document.getElementById('startDate').value,
                 endDate: document.getElementById('endDate').value,
-                leaveDays: leaveDays,
                 reason: document.getElementById('reason').value,
                 submittedAt: new Date().toISOString()
             };
             
-            // التحقق من البيانات
-            if (!formData.name) {
-                showMessage('error', currentLang === 'ar' ? 'الرجاء اختيار الموظف' : 'Please select employee');
-                return;
-            }
-            
-            // إظهار التحميل
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('loader').style.display = 'block';
-            hideAllMessages();
             
-            // حفظ محلياً
-            const savedLocally = saveToLocalStorage(formData);
-            
-            // إرسال للخادم
             await submitToGoogleAppsScript(formData);
             
-            // إظهار النجاح
-            showMessage('success', currentLang === 'ar' ? 
-                'تم إرسال طلب الإجازة بنجاح!' : 
-                'Leave request submitted successfully!');
-            
-            // إعادة تعيين النموذج
+            document.getElementById('successMessage').style.display = 'block';
             document.getElementById('leaveForm').reset();
             setupDates();
-            updateEmployees();
-            document.getElementById('balanceCard').style.display = 'none';
-            document.getElementById('leaveInfo').style.display = 'none';
             
-            // إعادة تفعيل الزر
+            // إعادة تعبئة بيانات الموظف بعد reset
+            document.getElementById('dept').value = currentEmployee.dept;
+            document.getElementById('name').value = currentEmployee.name;
+            document.getElementById('email').value = currentEmployee.email;
+            
+            setTimeout(() => {
+                document.getElementById('successMessage').style.display = 'none';
+            }, 5000);
+            
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('loader').style.display = 'none';
         });
 
-        // ============= دوال مساعدة =============
-        function showMessage(type, text) {
-            hideAllMessages();
-            const element = document.getElementById(type + 'Message');
-            if (element) {
-                element.querySelector('span').textContent = text;
-                element.style.display = 'block';
-                
-                setTimeout(() => {
-                    element.style.display = 'none';
-                }, 5000);
-            }
-        }
-
-        function hideMessage(type) {
-            const element = document.getElementById(type + 'Message');
-            if (element) element.style.display = 'none';
-        }
-
-        function hideAllMessages() {
-            hideMessage('success');
-            hideMessage('error');
-        }
-
-        function showDebugInfo() {
-            const debugInfo = {
-                currentLang,
-                localDataCount: JSON.parse(localStorage.getItem('dar_leave_requests') || '[]').length,
-                userAgent: navigator.userAgent,
-                online: navigator.onLine,
-                timestamp: new Date().toISOString(),
-                scriptURL: 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec',
-                appStatus: 'running'
-            };
-            
-            document.getElementById('debugInfo').textContent = JSON.stringify(debugInfo, null, 2);
-            document.getElementById('debugModal').style.display = 'block';
-        }
-
-        function hideDebugInfo() {
-            document.getElementById('debugModal').style.display = 'none';
-        }
-
-        // ============= أحداث المستمع =============
-        document.getElementById('name').addEventListener('change', function() {
-            const selectedOption = this.options[this.selectedIndex];
-            const email = selectedOption.getAttribute('data-email');
-            document.getElementById('email').value = email || '';
-        });
-
+        // أحداث المستمع
         document.getElementById('startDate').addEventListener('change', function() {
             const startDate = new Date(this.value);
             const minEndDate = new Date(startDate);
@@ -991,28 +685,16 @@
             if (new Date(document.getElementById('endDate').value) < minEndDate) {
                 document.getElementById('endDate').value = minEndDate.toISOString().split('T')[0];
             }
-            
-            calculateLeaveDays();
         });
-
-        document.getElementById('endDate').addEventListener('change', calculateLeaveDays);
-        document.getElementById('type').addEventListener('change', calculateLeaveDays);
 
         document.getElementById('btn-ar').addEventListener('click', () => switchLanguage('ar'));
         document.getElementById('btn-en').addEventListener('click', () => switchLanguage('en'));
 
-        // ============= التهيئة عند التحميل =============
+        // التهيئة
         document.addEventListener('DOMContentLoaded', function() {
             setupDates();
             switchLanguage('ar');
-            updateEmployees();
-            
-            const localData = JSON.parse(localStorage.getItem('dar_leave_requests') || '[]');
-            if (localData.length > 0) {
-                document.getElementById('localDataInfo').style.display = 'block';
-            }
-            
-            console.log('🚀 نظام طلبات الإجازة v3.0 جاهز للاستخدام');
+            enableFormFields(false); // النموذج مقفل في البداية
         });
     </script>
 </body>
