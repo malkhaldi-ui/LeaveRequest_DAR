@@ -244,6 +244,11 @@
             gap: 8px;
         }
 
+        .form-group label i {
+            color: var(--primary);
+            width: 20px;
+        }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -269,6 +274,12 @@
             min-height: 120px;
             resize: vertical;
             font-family: inherit;
+        }
+
+        .readonly-field {
+            background-color: #f0f0f0 !important;
+            color: #555 !important;
+            cursor: not-allowed;
         }
 
         .submit-btn {
@@ -351,6 +362,15 @@
             margin-top: 40px;
         }
 
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 0 15px;
@@ -386,7 +406,7 @@
                 <p>لأسباب أمنية، الرجاء إدخال الرمز الخاص بك لفتح نموذج الطلب</p>
                 
                 <div class="security-input-group">
-                    <input type="password" id="securityCode" placeholder="أدخل الرمز السري" maxlength="6" onkeypress="handleEnterKey(event)">
+                    <input type="password" id="securityCode" placeholder="أدخل الرمز السري" maxlength="10" onkeypress="handleEnterKey(event)">
                     <button class="security-btn" onclick="verifySecurityCode()">
                         <i class="fas fa-lock-open"></i>
                         دخول
@@ -424,7 +444,7 @@
 
                     <div class="form-group">
                         <label for="email"><i class="fas fa-envelope"></i> <span data-ar="البريد الإلكتروني" data-en="Email">البريد الإلكتروني</span></label>
-                        <input type="email" id="email" name="email" required readonly>
+                        <input type="email" id="email" name="email" readonly class="readonly-field">
                     </div>
 
                     <div class="form-group">
@@ -482,16 +502,18 @@
         <!-- الفوتر -->
         <footer class="footer">
             <p>© 2026 دار للسلام والازدهار. جميع الحقوق محفوظة.</p>
-            <p>نظام طلبات الإجازة v4.0  </p>
+            <p>نظام طلبات الإجازة v4.0 | مع رمز الأمان</p>
         </footer>
     </div>
 
     <script>
-        // ============= قائمة الموظفين مع رموز الأمان =============
+        // ============= ✅ البيانات الأساسية - نسخة واحدة فقط =============
         const employeesWithCodes = {
-            // إدخال البيانات على الشكل: "الاسم": { email, dept, code }
+            // المراقبة والتقييم
             "مهيدي الخالدي": { email: "malkhaldi@dar.ngo", dept: "المراقبة والتقييم", code: "ME_001" },
-            "نانسي حلاق": { email: "nancy@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" },
+            "نانسي حلاق": { email: "nhallak@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" },
+            
+            // البرامج
             "سلاف أبو حمدان": { email: "shamdan@dar.ngo", dept: "البرامج", code: "Pro_202" },
             "رغد العبو": { email: "ralabo@dar.ngo", dept: "البرامج", code: "Pro_020" },
             "سيلفارت سلوم": { email: "ssalloum@dar.ngo", dept: "البرامج", code: "Pro_S26" },
@@ -499,34 +521,48 @@
             "خناف شمو": { email: "kshamo@dar.ngo", dept: "البرامج", code: "Pro_X002" },
             "عبد الحميد الحسين": { email: "aALHUSSAIN@dar.ngo", dept: "البرامج", code: "Pro_A89" },
             "هند الفارس": { email: "hAlfares@dar.ngo", dept: "البرامج", code: "Pro_H55" },
+            
+            // العمليات
             "آلان خليل": { email: "akhalil@dar.ngo", dept: "العمليات", code: "Op_A159" },
             "هبة المناديلي": { email: "hr@dar.ngo", dept: "العمليات", code: "Op_H753" },
             "عبد القادر سباغ": { email: "asabbagh@dar.ngo", dept: "العمليات", code: "Op_A654" },
             "لادي حاممدي": { email: "lHamdi@dar.ngo", dept: "العمليات", code: "Op_L351" },
             "محمد بدور": { email: "mbaddou@dar.ngo", dept: "العمليات", code: "Op_M957" },
             "رشا دهنة": { email: "rdehneh@dar.ngo", dept: "العمليات", code: "Op_R684" },
-            "إ[راهيم شيخ نبي": { email: "inabi@dar.ngo", dept: "العمليات", code: "Op_IB132" },
+            "إبراهيم شيخ نبي": { email: "inabi@dar.ngo", dept: "العمليات", code: "Op_IB132" },
             "مالك أومو": { email: "momo@dar.ngo", dept: "العمليات", code: "Op_M095" },
+            
+            // الإعلام
             "حازم الزير": { email: "Hmohammad@dar.ngo", dept: "الإعلام", code: "M_H268" },
+            
+            // الشراكات
             "فيلكس": { email: "fLegrand@dar.ngo", dept: "الشراكات", code: "Pa_F624" },
-            "ريعان لعاني": { email: "ralani@dar.ngo", dept: "الشراكات", code: "Pa_R978" },
+            "ريعان العاني": { email: "ralani@dar.ngo", dept: "الشراكات", code: "Pa_R978" },
             "عصمت بكر": { email: "eBaker@dar.ngo", dept: "الشراكات", code: "Pa_E990" },
+            
+            // الإدارة التنفيذية
             "سمر قطان": { email: "skattan@dar.ngo", dept: "الإدارة التنفيذية", code: "CEO_S111" }
         };
 
         let currentLang = 'ar';
         let currentEmployee = null;
 
+        
+
+
         // ============= التحقق من رمز الأمان =============
         function verifySecurityCode() {
             const codeInput = document.getElementById('securityCode').value.trim();
             const securityError = document.getElementById('securityError');
+            
+            console.log("🔑 جاري التحقق من الرمز:", codeInput);
             
             // البحث عن الموظف الذي رمزه مطابق
             let foundEmployee = null;
             for (const [name, data] of Object.entries(employeesWithCodes)) {
                 if (data.code === codeInput) {
                     foundEmployee = { name, ...data };
+                    console.log("✅ تم العثور على الموظف:", name);
                     break;
                 }
             }
@@ -540,7 +576,7 @@
                 // تفعيل جميع حقول النموذج
                 enableFormFields(true);
                 
-                // تعبئة بيانات الموظف تلقائياً (قسم واسم فقط - للقراءة)
+                // تعبئة بيانات الموظف تلقائياً
                 document.getElementById('dept').value = foundEmployee.dept;
                 document.getElementById('name').value = foundEmployee.name;
                 document.getElementById('email').value = foundEmployee.email;
@@ -550,6 +586,7 @@
                 
             } else {
                 // رمز خاطئ
+                console.log("❌ رمز خاطئ:", codeInput);
                 securityError.style.display = 'block';
                 document.getElementById('securityCode').value = '';
                 document.getElementById('securityCode').focus();
@@ -577,7 +614,7 @@
             });
         }
 
-        // ============= دوال النموذج الأساسية =============
+        // ============= تهيئة التواريخ =============
         function setupDates() {
             const today = new Date().toISOString().split('T')[0];
             const tomorrow = new Date();
@@ -590,6 +627,7 @@
             document.getElementById('endDate').min = tomorrowStr;
         }
 
+        // ============= تبديل اللغة =============
         function switchLanguage(lang) {
             currentLang = lang;
             
@@ -615,7 +653,7 @@
             document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
         }
 
-        // ============= الإرسال =============
+        // ============= الإرسال إلى Apps Script =============
         async function submitToGoogleAppsScript(data) {
             const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
             
@@ -626,6 +664,7 @@
                     body: JSON.stringify(data),
                     headers: { 'Content-Type': 'application/json' }
                 });
+                console.log('✅ تم الإرسال بنجاح');
                 return { success: true };
             } catch (error) {
                 console.error('❌ خطأ في الإرسال:', error);
@@ -695,6 +734,7 @@
             setupDates();
             switchLanguage('ar');
             enableFormFields(false); // النموذج مقفل في البداية
+            testAllCodes(); // تشغيل التشخيص
         });
     </script>
 </body>
