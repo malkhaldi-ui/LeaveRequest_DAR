@@ -684,47 +684,52 @@
             }
         }
 
-        // ============= جلب رصيد الموظف من Apps Script =============
-        async function loadEmployeeBalance(employeeName) {
-            const balanceSection = document.getElementById('balanceSection');
-            const balanceLoading = document.getElementById('balanceLoading');
-            const balanceGrid = document.getElementById('balanceGrid');
+// ============= جلب رصيد الموظف من Apps Script =============
+async function loadEmployeeBalance(employeeName) {
+    const balanceSection = document.getElementById('balanceSection');
+    const balanceLoading = document.getElementById('balanceLoading');
+    const balanceGrid = document.getElementById('balanceGrid');
+    
+    balanceSection.style.display = 'block';
+    balanceLoading.style.display = 'block';
+    balanceLoading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...';
+    balanceGrid.style.display = 'none';
+    
+    try {
+        // ✅ جلب الرصيد الحقيقي من Apps Script
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
+        
+        // إضافة parameter للحصول على الرصيد
+        const url = `${scriptURL}?action=getBalance&name=${encodeURIComponent(employeeName)}`;
+        console.log('🔍 محاولة جلب الرصيد من:', url);
+        
+        const response = await fetch(url);
+        console.log('📥 حالة الاستجابة:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log('📦 نتيجة الجلب:', result);
+        
+        if (result.success && result.balance) {
+            // ✅ استخدام الرصيد الحقيقي من الشيت
+            employeeBalance = result.balance;
+            displayEmployeeBalance(result.balance);
             
-            balanceSection.style.display = 'block';
-            balanceLoading.style.display = 'block';
-            balanceGrid.style.display = 'none';
+            balanceLoading.style.display = 'none';
+            balanceGrid.style.display = 'grid';
             
-            try {
-                // ✅ جلب الرصيد الحقيقي من Apps Script
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
-                
-                // إضافة parameter للحصول على الرصيد
-                const response = await fetch(`${scriptURL}?action=getBalance&name=${encodeURIComponent(employeeName)}`);
-                const result = await response.json();
-                
-                if (result.success && result.balance) {
-                    // ✅ استخدام الرصيد الحقيقي من الشيت
-                    employeeBalance = result.balance;
-                    displayEmployeeBalance(result.balance);
-                    
-                    balanceLoading.style.display = 'none';
-                    balanceGrid.style.display = 'grid';
-                    
-                    console.log('✅ تم جلب الرصيد الحقيقي:', result.balance);
-                } else {
-                    
-                    
-                    employeeBalance = fallbackBalance;
-                    displayEmployeeBalance(fallbackBalance);
-                    
-                    balanceLoading.style.display = 'none';
-                    balanceGrid.style.display = 'grid';
-                }
-                
-            } catch (error) {
-                console.error('❌ خطأ في جلب الرصيد:', error);
-                
-                // استخدام بيانات افتراضية في حالة الخطأ
+            console.log('✅ تم جلب الرصيد الحقيقي:', result.balance);
+        } else {
+            // إذا فشل الجلب، استخدم بيانات افتراضية كـ fallback
+            console.warn('⚠️ فشل جلب الرصيد من السيرفر:', result.error);
+            
+            balanceLoading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${result.error || 'فشل الاتصال'}`;
+            
+            // استخدام البيانات الافتراضية
+            setTimeout(() => {
                 const fallbackBalance = {
                     annual: 30,
                     sick: 15,
@@ -740,13 +745,44 @@
                 employeeBalance = fallbackBalance;
                 displayEmployeeBalance(fallbackBalance);
                 
-                balanceLoading.innerHTML = '<i class="fas fa-exclamation-circle"></i> استخدام الرصيد الافتراضي مؤقتاً';
+                balanceLoading.innerHTML = '<i class="fas fa-info-circle"></i> استخدام الرصيد الافتراضي مؤقتاً';
                 setTimeout(() => {
                     balanceLoading.style.display = 'none';
                     balanceGrid.style.display = 'grid';
-                }, 1500);
-            }
+                }, 2000);
+            }, 1000);
         }
+        
+    } catch (error) {
+        console.error('❌ خطأ في جلب الرصيد:', error);
+        
+        balanceLoading.innerHTML = `<i class="fas fa-exclamation-circle"></i> خطأ: ${error.message}`;
+        
+        // استخدام بيانات افتراضية في حالة الخطأ
+        setTimeout(() => {
+            const fallbackBalance = {
+                annual: 30,
+                sick: 15,
+                bereavement: 7,
+                hourly: 30,
+                maternity: 70,
+                paternity: 3,
+                unpaid: 365,
+                hajj: 15,
+                marriage: 5
+            };
+            
+            employeeBalance = fallbackBalance;
+            displayEmployeeBalance(fallbackBalance);
+            
+            balanceLoading.innerHTML = '<i class="fas fa-info-circle"></i> استخدام الرصيد الافتراضي مؤقتاً';
+            setTimeout(() => {
+                balanceLoading.style.display = 'none';
+                balanceGrid.style.display = 'grid';
+            }, 2000);
+        }, 1000);
+    }
+}
 
         // ============= عرض رصيد الموظف =============
         function displayEmployeeBalance(balance) {
