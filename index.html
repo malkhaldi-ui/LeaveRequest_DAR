@@ -712,20 +712,7 @@
                     
                     console.log('✅ تم جلب الرصيد الحقيقي:', result.balance);
                 } else {
-                    // إذا فشل الجلب، استخدم بيانات افتراضية كـ fallback
-                    console.warn('⚠️ فشل جلب الرصيد، استخدام بيانات افتراضية:', result.error);
                     
-                    const fallbackBalance = {
-                        annual: 30,
-                        sick: 15,
-                        bereavement: 7,
-                        hourly: 30,
-                        maternity: 70,
-                        paternity: 3,
-                        unpaid: 365,
-                        hajj: 15,
-                        marriage: 5
-                    };
                     
                     employeeBalance = fallbackBalance;
                     displayEmployeeBalance(fallbackBalance);
