@@ -168,6 +168,79 @@
             display: none;
         }
 
+        /* ========== قسم عرض الرصيد ========== */
+        .balance-section {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0 30px 0;
+            color: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .balance-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding-bottom: 10px;
+        }
+
+        .balance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .balance-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s;
+        }
+
+        .balance-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .balance-item i {
+            font-size: 24px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .balance-item .label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 5px;
+        }
+
+        .balance-item .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .balance-item .unit {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .balance-loading {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .balance-loading i {
+            font-size: 30px;
+            animation: spin 1s linear infinite;
+        }
+
         /* ========== النموذج الرئيسي (مقفل في البداية) ========== */
         .main-form {
             opacity: 0.5;
@@ -384,6 +457,9 @@
             .security-input-group {
                 flex-direction: column;
             }
+            .balance-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
     </style>
 </head>
@@ -430,6 +506,17 @@
                     <button class="lang-btn" id="btn-en">English <i class="fas fa-language"></i></button>
                 </div>
 
+                <!-- ========== قسم عرض الرصيد ========== -->
+                <div id="balanceSection" class="balance-section">
+                    <h3><i class="fas fa-chart-pie"></i> رصيد الإجازات المتبقي</h3>
+                    <div id="balanceLoading" class="balance-loading">
+                        <i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...
+                    </div>
+                    <div id="balanceGrid" class="balance-grid" style="display: none;">
+                        <!-- سيتم تعبئة الرصيد هنا -->
+                    </div>
+                </div>
+
                 <!-- نموذج طلب الإجازة -->
                 <form id="leaveForm">
                     <div class="form-group">
@@ -459,7 +546,7 @@
                             <option value="paternity" data-ar="إجازة أبوة" data-en="Paternity Leave">إجازة أبوة</option>
                             <option value="unpaid" data-ar="إجازة بلا راتب" data-en="Unpaid Leave">إجازة بلا راتب</option>
                             <option value="hajj" data-ar="إجازة حج" data-en="Hajj Leave">إجازة حج</option>
-                            <option value="marriage" data-ar="إجازة بلا راتب" data-en="Marriage Leave">إجازة زواج</option>
+                            <option value="marriage" data-ar="إجازة زواج" data-en="Marriage Leave">إجازة زواج</option>
                         </select>
                     </div>
 
@@ -504,7 +591,7 @@
         <!-- الفوتر -->
         <footer class="footer">
             <p>© 2026 دار للسلام والازدهار. جميع الحقوق محفوظة.</p>
-            <p>نظام طلبات الإجازة v4.0 | مع رمز الأمان</p>
+            <p>نظام طلبات الإجازة v5.0 | مع عرض الرصيد المتبقي</p>
         </footer>
     </div>
 
@@ -546,11 +633,10 @@
             "سمر قطان": { email: "skattan@dar.ngo", dept: "الإدارة التنفيذية", code: "CEO_S111" }
         };
 
+        // بيانات الرصيد
+        let employeeBalance = null;
         let currentLang = 'ar';
         let currentEmployee = null;
-
-        
-
 
         // ============= التحقق من رمز الأمان =============
         function verifySecurityCode() {
@@ -583,6 +669,9 @@
                 document.getElementById('name').value = foundEmployee.name;
                 document.getElementById('email').value = foundEmployee.email;
                 
+                // جلب وعرض الرصيد الحقيقي
+                loadEmployeeBalance(foundEmployee.name);
+                
                 // رسالة ترحيب
                 alert(`✅ مرحباً ${foundEmployee.name}!\nتم فتح النموذج بنجاح.`);
                 
@@ -593,6 +682,115 @@
                 document.getElementById('securityCode').value = '';
                 document.getElementById('securityCode').focus();
             }
+        }
+
+        // ============= جلب رصيد الموظف من Apps Script =============
+        async function loadEmployeeBalance(employeeName) {
+            const balanceSection = document.getElementById('balanceSection');
+            const balanceLoading = document.getElementById('balanceLoading');
+            const balanceGrid = document.getElementById('balanceGrid');
+            
+            balanceSection.style.display = 'block';
+            balanceLoading.style.display = 'block';
+            balanceGrid.style.display = 'none';
+            
+            try {
+                // ✅ جلب الرصيد الحقيقي من Apps Script
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
+                
+                // إضافة parameter للحصول على الرصيد
+                const response = await fetch(`${scriptURL}?action=getBalance&name=${encodeURIComponent(employeeName)}`);
+                const result = await response.json();
+                
+                if (result.success && result.balance) {
+                    // ✅ استخدام الرصيد الحقيقي من الشيت
+                    employeeBalance = result.balance;
+                    displayEmployeeBalance(result.balance);
+                    
+                    balanceLoading.style.display = 'none';
+                    balanceGrid.style.display = 'grid';
+                    
+                    console.log('✅ تم جلب الرصيد الحقيقي:', result.balance);
+                } else {
+                    // إذا فشل الجلب، استخدم بيانات افتراضية كـ fallback
+                    console.warn('⚠️ فشل جلب الرصيد، استخدام بيانات افتراضية:', result.error);
+                    
+                    const fallbackBalance = {
+                        annual: 30,
+                        sick: 15,
+                        bereavement: 7,
+                        hourly: 30,
+                        maternity: 70,
+                        paternity: 3,
+                        unpaid: 365,
+                        hajj: 15,
+                        marriage: 5
+                    };
+                    
+                    employeeBalance = fallbackBalance;
+                    displayEmployeeBalance(fallbackBalance);
+                    
+                    balanceLoading.style.display = 'none';
+                    balanceGrid.style.display = 'grid';
+                }
+                
+            } catch (error) {
+                console.error('❌ خطأ في جلب الرصيد:', error);
+                
+                // استخدام بيانات افتراضية في حالة الخطأ
+                const fallbackBalance = {
+                    annual: 30,
+                    sick: 15,
+                    bereavement: 7,
+                    hourly: 30,
+                    maternity: 70,
+                    paternity: 3,
+                    unpaid: 365,
+                    hajj: 15,
+                    marriage: 5
+                };
+                
+                employeeBalance = fallbackBalance;
+                displayEmployeeBalance(fallbackBalance);
+                
+                balanceLoading.innerHTML = '<i class="fas fa-exclamation-circle"></i> استخدام الرصيد الافتراضي مؤقتاً';
+                setTimeout(() => {
+                    balanceLoading.style.display = 'none';
+                    balanceGrid.style.display = 'grid';
+                }, 1500);
+            }
+        }
+
+        // ============= عرض رصيد الموظف =============
+        function displayEmployeeBalance(balance) {
+            const balanceGrid = document.getElementById('balanceGrid');
+            
+            const leaveTypes = [
+                { key: 'annual', icon: 'fa-sun', label: 'سنوية', color: '#FFD700' },
+                { key: 'sick', icon: 'fa-hospital', label: 'مرضية', color: '#FF6B6B' },
+                { key: 'bereavement', icon: 'fa-heart', label: 'وفاة', color: '#A9A9A9' },
+                { key: 'hourly', icon: 'fa-clock', label: 'ساعية', color: '#4ECDC4' },
+                { key: 'maternity', icon: 'fa-baby', label: 'أمومة', color: '#FFB6C1' },
+                { key: 'paternity', icon: 'fa-child', label: 'أبوة', color: '#87CEEB' },
+                { key: 'unpaid', icon: 'fa-money-bill', label: 'بلا راتب', color: '#DDA0DD' },
+                { key: 'hajj', icon: 'fa-mosque', label: 'حج', color: '#8FBC8F' },
+                { key: 'marriage', icon: 'fa-heart', label: 'زواج', color: '#FF69B4' }
+            ];
+            
+            let html = '';
+            leaveTypes.forEach(type => {
+                const value = balance[type.key] || 0;
+                html += `
+                    <div class="balance-item" style="border-bottom: 3px solid ${type.color};">
+                        <i class="fas ${type.icon}" style="color: ${type.color};"></i>
+                        <div class="label">${type.label}</div>
+                        <div class="value">${value}</div>
+                        <div class="unit">يوم</div>
+                    </div>
+                `;
+            });
+            
+            balanceGrid.innerHTML = html;
         }
 
         // دالة للدخول بالضغط على Enter
@@ -697,6 +895,7 @@
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('loader').style.display = 'block';
             
+            // إرسال الطلب
             await submitToGoogleAppsScript(formData);
             
             document.getElementById('successMessage').style.display = 'block';
@@ -707,6 +906,11 @@
             document.getElementById('dept').value = currentEmployee.dept;
             document.getElementById('name').value = currentEmployee.name;
             document.getElementById('email').value = currentEmployee.email;
+            
+            // تحديث الرصيد بعد الإرسال مباشرة
+            setTimeout(() => {
+                loadEmployeeBalance(currentEmployee.name);
+            }, 2000); // تأخير بسيط للتأكد من تحديث الشيت
             
             setTimeout(() => {
                 document.getElementById('successMessage').style.display = 'none';
@@ -736,7 +940,6 @@
             setupDates();
             switchLanguage('ar');
             enableFormFields(false); // النموذج مقفل في البداية
-            testAllCodes(); // تشغيل التشخيص
         });
     </script>
 </body>
