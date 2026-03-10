@@ -461,6 +461,54 @@
                 grid-template-columns: repeat(2, 1fr);
             }
         }
+
+        /* حقل الساعات للإجازة الساعية */
+        .hours-group {
+            display: none;
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-right: 4px solid var(--info);
+        }
+
+        .hours-group label {
+            color: var(--info);
+        }
+
+        .hours-input {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .hours-input input {
+            width: 150px;
+            text-align: center;
+            font-size: 18px;
+            border: 2px solid var(--info);
+        }
+
+        .hours-input span {
+            font-size: 16px;
+            color: var(--info);
+            font-weight: bold;
+        }
+
+        /* تلميحات */
+        .hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .hint i {
+            color: var(--secondary);
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -491,6 +539,12 @@
                 
                 <div id="securityError" class="security-error">
                     <i class="fas fa-exclamation-circle"></i> رمز خاطئ! الرجاء المحاولة مرة أخرى
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <button onclick="testAPIConnection()" style="background: transparent; color: white; border: 1px solid white; padding: 8px 15px; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-plug"></i> اختبار الاتصال
+                    </button>
                 </div>
             </div>
 
@@ -536,7 +590,7 @@
 
                     <div class="form-group">
                         <label for="type"><i class="fas fa-calendar-alt"></i> <span data-ar="نوع الإجازة" data-en="Leave Type">نوع الإجازة</span></label>
-                        <select id="type" name="type" required>
+                        <select id="type" name="type" required onchange="toggleHourlyField()">
                             <option value="" data-ar="اختر نوع الإجازة" data-en="Select Leave Type">اختر نوع الإجازة</option>
                             <option value="annual" data-ar="إجازة سنوية" data-en="Annual Leave">إجازة سنوية</option>
                             <option value="sick" data-ar="إجازة مرضية" data-en="Sick Leave">إجازة مرضية</option>
@@ -550,14 +604,35 @@
                         </select>
                     </div>
 
+                    <!-- ========== حقل الساعات للإجازة الساعية ========== -->
+                    <div id="hoursGroup" class="hours-group">
+                        <label for="hours"><i class="fas fa-clock"></i> عدد الساعات:</label>
+                        <div class="hours-input">
+                            <input type="number" id="hours" name="hours" min="1" max="8" value="1">
+                            <span>ساعة</span>
+                        </div>
+                        <div class="hint">
+                            <i class="fas fa-info-circle"></i> الحد الأقصى 8 ساعات في اليوم
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <label for="startDate"><i class="fas fa-calendar-plus"></i> <span data-ar="تاريخ البدء" data-en="Start Date">تاريخ البدء</span></label>
-                        <input type="date" id="startDate" name="startDate" required>
+                        <input type="date" id="startDate" name="startDate" required onchange="updateReturnDateMin()">
                     </div>
 
                     <div class="form-group">
                         <label for="endDate"><i class="fas fa-calendar-minus"></i> <span data-ar="تاريخ الانتهاء" data-en="End Date">تاريخ الانتهاء</span></label>
-                        <input type="date" id="endDate" name="endDate" required>
+                        <input type="date" id="endDate" name="endDate" required onchange="updateReturnDateMin()">
+                    </div>
+
+                    <!-- ========== حقل تاريخ الالتحاق الجديد ========== -->
+                    <div class="form-group">
+                        <label for="returnDate"><i class="fas fa-calendar-check"></i> <span data-ar="تاريخ الالتحاق" data-en="Return Date">تاريخ الالتحاق</span></label>
+                        <input type="date" id="returnDate" name="returnDate" required>
+                        <div class="hint">
+                            <i class="fas fa-info-circle"></i> تاريخ العودة إلى العمل بعد الإجازة
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -591,12 +666,12 @@
         <!-- الفوتر -->
         <footer class="footer">
             <p>© 2026 دار للسلام والازدهار. جميع الحقوق محفوظة.</p>
-            <p>نظام طلبات الإجازة v5.0 | مع عرض الرصيد المتبقي</p>
+            <p>نظام طلبات الإجازة v5.0 | قسم المراقبة والتقييم</p>
         </footer>
     </div>
 
     <script>
-        // ============= ✅ البيانات الأساسية - نسخة واحدة فقط =============
+        // ============= ✅ البيانات الأساسية =============
         const employeesWithCodes = {
             // المراقبة والتقييم
             "مهيدي الخالدي": { email: "malkhaldi@dar.ngo", dept: "المراقبة والتقييم", code: "ME_001" },
@@ -633,10 +708,46 @@
             "سمر قطان": { email: "skattan@dar.ngo", dept: "الإدارة التنفيذية", code: "CEO_S111" }
         };
 
-        // بيانات الرصيد
         let employeeBalance = null;
         let currentLang = 'ar';
         let currentEmployee = null;
+
+        // ============= إظهار/إخفاء حقل الساعات =============
+        function toggleHourlyField() {
+            const type = document.getElementById('type').value;
+            const hoursGroup = document.getElementById('hoursGroup');
+            const endDateField = document.getElementById('endDate');
+            const returnDateField = document.getElementById('returnDate');
+            
+            if (type === 'hourly') {
+                hoursGroup.style.display = 'block';
+                // للإجازة الساعية، نجعل تاريخ الانتهاء وتاريخ الالتحاق غير مطلوبين
+                endDateField.removeAttribute('required');
+                returnDateField.removeAttribute('required');
+            } else {
+                hoursGroup.style.display = 'none';
+                endDateField.setAttribute('required', 'required');
+                returnDateField.setAttribute('required', 'required');
+            }
+        }
+
+        // ============= تحديث الحد الأدنى لتاريخ الالتحاق =============
+        function updateReturnDateMin() {
+            const endDate = document.getElementById('endDate').value;
+            const returnDate = document.getElementById('returnDate');
+            
+            if (endDate) {
+                const end = new Date(endDate);
+                const nextDay = new Date(end);
+                nextDay.setDate(end.getDate() + 1);
+                returnDate.min = nextDay.toISOString().split('T')[0];
+                
+                // إذا كان تاريخ الالتحاق أقل من الحد الأدنى، قم بتحديثه
+                if (returnDate.value && new Date(returnDate.value) < nextDay) {
+                    returnDate.value = nextDay.toISOString().split('T')[0];
+                }
+            }
+        }
 
         // ============= التحقق من رمز الأمان =============
         function verifySecurityCode() {
@@ -645,7 +756,6 @@
             
             console.log("🔑 جاري التحقق من الرمز:", codeInput);
             
-            // البحث عن الموظف الذي رمزه مطابق
             let foundEmployee = null;
             for (const [name, data] of Object.entries(employeesWithCodes)) {
                 if (data.code === codeInput) {
@@ -656,27 +766,21 @@
             }
             
             if (foundEmployee) {
-                // رمز صحيح - فتح النموذج
                 securityError.style.display = 'none';
                 document.getElementById('mainForm').classList.add('unlocked');
                 currentEmployee = foundEmployee;
                 
-                // تفعيل جميع حقول النموذج
                 enableFormFields(true);
                 
-                // تعبئة بيانات الموظف تلقائياً
                 document.getElementById('dept').value = foundEmployee.dept;
                 document.getElementById('name').value = foundEmployee.name;
                 document.getElementById('email').value = foundEmployee.email;
                 
-                // جلب وعرض الرصيد الحقيقي
                 loadEmployeeBalance(foundEmployee.name);
                 
-                // رسالة ترحيب
                 alert(`✅ مرحباً ${foundEmployee.name}!\nتم فتح النموذج بنجاح.`);
                 
             } else {
-                // رمز خاطئ
                 console.log("❌ رمز خاطئ:", codeInput);
                 securityError.style.display = 'block';
                 document.getElementById('securityCode').value = '';
@@ -684,105 +788,86 @@
             }
         }
 
-// ============= جلب رصيد الموظف من Apps Script =============
-async function loadEmployeeBalance(employeeName) {
-    const balanceSection = document.getElementById('balanceSection');
-    const balanceLoading = document.getElementById('balanceLoading');
-    const balanceGrid = document.getElementById('balanceGrid');
-    
-    balanceSection.style.display = 'block';
-    balanceLoading.style.display = 'block';
-    balanceLoading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...';
-    balanceGrid.style.display = 'none';
-    
-    try {
-        // ✅ جلب الرصيد الحقيقي من Apps Script
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
-        
-        // إضافة parameter للحصول على الرصيد
-        const url = `${scriptURL}?action=getBalance&name=${encodeURIComponent(employeeName)}`;
-        console.log('🔍 محاولة جلب الرصيد من:', url);
-        
-        const response = await fetch(url);
-        console.log('📥 حالة الاستجابة:', response.status, response.statusText);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        console.log('📦 نتيجة الجلب:', result);
-        
-        if (result.success && result.balance) {
-            // ✅ استخدام الرصيد الحقيقي من الشيت
-            employeeBalance = result.balance;
-            displayEmployeeBalance(result.balance);
+        // ============= جلب رصيد الموظف =============
+        async function loadEmployeeBalance(employeeName) {
+            const balanceSection = document.getElementById('balanceSection');
+            const balanceLoading = document.getElementById('balanceLoading');
+            const balanceGrid = document.getElementById('balanceGrid');
             
-            balanceLoading.style.display = 'none';
-            balanceGrid.style.display = 'grid';
+            balanceSection.style.display = 'block';
+            balanceLoading.style.display = 'block';
+            balanceLoading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...';
+            balanceGrid.style.display = 'none';
             
-            console.log('✅ تم جلب الرصيد الحقيقي:', result.balance);
-        } else {
-            // إذا فشل الجلب، استخدم بيانات افتراضية كـ fallback
-            console.warn('⚠️ فشل جلب الرصيد من السيرفر:', result.error);
-            
-            balanceLoading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${result.error || 'فشل الاتصال'}`;
-            
-            // استخدام البيانات الافتراضية
-            setTimeout(() => {
-                const fallbackBalance = {
-                    annual: 30,
-                    sick: 15,
-                    bereavement: 7,
-                    hourly: 30,
-                    maternity: 70,
-                    paternity: 3,
-                    unpaid: 365,
-                    hajj: 15,
-                    marriage: 5
-                };
+            try {
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
                 
-                employeeBalance = fallbackBalance;
-                displayEmployeeBalance(fallbackBalance);
+                const url = `${scriptURL}?action=getBalance&name=${encodeURIComponent(employeeName)}`;
+                console.log('🔍 محاولة جلب الرصيد من:', url);
                 
-                balanceLoading.innerHTML = '<i class="fas fa-info-circle"></i> استخدام الرصيد الافتراضي مؤقتاً';
-                setTimeout(() => {
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('📦 نتيجة الجلب:', result);
+                
+                if (result.success && result.balance) {
+                    employeeBalance = result.balance;
+                    displayEmployeeBalance(result.balance);
+                    
                     balanceLoading.style.display = 'none';
                     balanceGrid.style.display = 'grid';
-                }, 2000);
-            }, 1000);
+                    
+                    console.log('✅ تم جلب الرصيد الحقيقي:', result.balance);
+                } else {
+                    console.warn('⚠️ فشل جلب الرصيد من السيرفر:', result.error);
+                    
+                    balanceLoading.innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${result.error || 'فشل الاتصال'}`;
+                    
+                    setTimeout(() => {
+                        const fallbackBalance = {
+                            annual: 30, sick: 15, bereavement: 7,
+                            hourly: 30, maternity: 70, paternity: 3,
+                            unpaid: 365, hajj: 15, marriage: 5
+                        };
+                        
+                        employeeBalance = fallbackBalance;
+                        displayEmployeeBalance(fallbackBalance);
+                        
+                        balanceLoading.innerHTML = '<i class="fas fa-info-circle"></i> استخدام الرصيد الافتراضي مؤقتاً';
+                        setTimeout(() => {
+                            balanceLoading.style.display = 'none';
+                            balanceGrid.style.display = 'grid';
+                        }, 2000);
+                    }, 1000);
+                }
+                
+            } catch (error) {
+                console.error('❌ خطأ في جلب الرصيد:', error);
+                
+                balanceLoading.innerHTML = `<i class="fas fa-exclamation-circle"></i> خطأ: ${error.message}`;
+                
+                setTimeout(() => {
+                    const fallbackBalance = {
+                        annual: 30, sick: 15, bereavement: 7,
+                        hourly: 30, maternity: 70, paternity: 3,
+                        unpaid: 365, hajj: 15, marriage: 5
+                    };
+                    
+                    employeeBalance = fallbackBalance;
+                    displayEmployeeBalance(fallbackBalance);
+                    
+                    balanceLoading.innerHTML = '<i class="fas fa-info-circle"></i> استخدام الرصيد الافتراضي مؤقتاً';
+                    setTimeout(() => {
+                        balanceLoading.style.display = 'none';
+                        balanceGrid.style.display = 'grid';
+                    }, 2000);
+                }, 1000);
+            }
         }
-        
-    } catch (error) {
-        console.error('❌ خطأ في جلب الرصيد:', error);
-        
-        balanceLoading.innerHTML = `<i class="fas fa-exclamation-circle"></i> خطأ: ${error.message}`;
-        
-        // استخدام بيانات افتراضية في حالة الخطأ
-        setTimeout(() => {
-            const fallbackBalance = {
-                annual: 30,
-                sick: 15,
-                bereavement: 7,
-                hourly: 30,
-                maternity: 70,
-                paternity: 3,
-                unpaid: 365,
-                hajj: 15,
-                marriage: 5
-            };
-            
-            employeeBalance = fallbackBalance;
-            displayEmployeeBalance(fallbackBalance);
-            
-            balanceLoading.innerHTML = '<i class="fas fa-info-circle"></i> استخدام الرصيد الافتراضي مؤقتاً';
-            setTimeout(() => {
-                balanceLoading.style.display = 'none';
-                balanceGrid.style.display = 'grid';
-            }, 2000);
-        }, 1000);
-    }
-}
 
         // ============= عرض رصيد الموظف =============
         function displayEmployeeBalance(balance) {
@@ -803,12 +888,13 @@ async function loadEmployeeBalance(employeeName) {
             let html = '';
             leaveTypes.forEach(type => {
                 const value = balance[type.key] || 0;
+                const unit = type.key === 'hourly' ? 'ساعة' : 'يوم';
                 html += `
                     <div class="balance-item" style="border-bottom: 3px solid ${type.color};">
                         <i class="fas ${type.icon}" style="color: ${type.color};"></i>
                         <div class="label">${type.label}</div>
                         <div class="value">${value}</div>
-                        <div class="unit">يوم</div>
+                        <div class="unit">${unit}</div>
                     </div>
                 `;
             });
@@ -816,18 +902,38 @@ async function loadEmployeeBalance(employeeName) {
             balanceGrid.innerHTML = html;
         }
 
-        // دالة للدخول بالضغط على Enter
+        // ============= اختبار الاتصال بـ API =============
+        async function testAPIConnection() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
+            
+            alert('🔍 جاري اختبار الاتصال...');
+            
+            try {
+                const response1 = await fetch(scriptURL);
+                const text1 = await response1.text();
+                console.log('✅ استجابة doGet:', text1);
+                
+                const response2 = await fetch(`${scriptURL}?action=getBalance&name=${encodeURIComponent('مهيدي الخالدي')}`);
+                const data2 = await response2.json();
+                console.log('✅ استجابة getBalance:', data2);
+                
+                alert(`✅ الاتصال ناجح!\n\ndoGet: ${text1.substring(0, 50)}...\n\ngetBalance: ${JSON.stringify(data2)}`);
+                
+            } catch (error) {
+                console.error('❌ فشل الاتصال:', error);
+                alert(`❌ فشل الاتصال: ${error.message}\n\nتأكد من:\n1. الرابط صحيح\n2. تم نشر التطبيق\n3. صلاحية الوصول Anyone`);
+            }
+        }
+
+        // ============= دوال مساعدة =============
         function handleEnterKey(event) {
             if (event.key === 'Enter') {
                 verifySecurityCode();
             }
         }
 
-        // تفعيل/تعطيل حقول النموذج
         function enableFormFields(enabled) {
-            const fields = [
-                'type', 'startDate', 'endDate', 'reason', 'submitBtn'
-            ];
+            const fields = ['type', 'startDate', 'endDate', 'returnDate', 'hours', 'reason', 'submitBtn'];
             
             fields.forEach(id => {
                 const element = document.getElementById(id);
@@ -837,7 +943,6 @@ async function loadEmployeeBalance(employeeName) {
             });
         }
 
-        // ============= تهيئة التواريخ =============
         function setupDates() {
             const today = new Date().toISOString().split('T')[0];
             const tomorrow = new Date();
@@ -847,10 +952,14 @@ async function loadEmployeeBalance(employeeName) {
             document.getElementById('startDate').value = today;
             document.getElementById('startDate').min = today;
             document.getElementById('endDate').value = tomorrowStr;
-            document.getElementById('endDate').min = tomorrowStr;
+            document.getElementById('endDate').min = today;
+            
+            // تاريخ الالتحاق الافتراضي (بعد يوم من الانتهاء)
+            const dayAfterTomorrow = new Date();
+            dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+            document.getElementById('returnDate').value = dayAfterTomorrow.toISOString().split('T')[0];
         }
 
-        // ============= تبديل اللغة =============
         function switchLanguage(lang) {
             currentLang = lang;
             
@@ -876,7 +985,6 @@ async function loadEmployeeBalance(employeeName) {
             document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
         }
 
-        // ============= الإرسال إلى Apps Script =============
         async function submitToGoogleAppsScript(data) {
             const scriptURL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
             
@@ -911,29 +1019,32 @@ async function loadEmployeeBalance(employeeName) {
                 type: document.getElementById('type').value,
                 startDate: document.getElementById('startDate').value,
                 endDate: document.getElementById('endDate').value,
+                returnDate: document.getElementById('returnDate').value,
                 reason: document.getElementById('reason').value,
                 submittedAt: new Date().toISOString()
             };
             
+            // إذا كانت إجازة ساعية، أضف عدد الساعات
+            if (formData.type === 'hourly') {
+                formData.hours = document.getElementById('hours').value;
+            }
+            
             document.getElementById('submitBtn').disabled = true;
             document.getElementById('loader').style.display = 'block';
             
-            // إرسال الطلب
             await submitToGoogleAppsScript(formData);
             
             document.getElementById('successMessage').style.display = 'block';
             document.getElementById('leaveForm').reset();
             setupDates();
             
-            // إعادة تعبئة بيانات الموظف بعد reset
             document.getElementById('dept').value = currentEmployee.dept;
             document.getElementById('name').value = currentEmployee.name;
             document.getElementById('email').value = currentEmployee.email;
             
-            // تحديث الرصيد بعد الإرسال مباشرة
             setTimeout(() => {
                 loadEmployeeBalance(currentEmployee.name);
-            }, 2000); // تأخير بسيط للتأكد من تحديث الشيت
+            }, 2000);
             
             setTimeout(() => {
                 document.getElementById('successMessage').style.display = 'none';
@@ -947,13 +1058,15 @@ async function loadEmployeeBalance(employeeName) {
         document.getElementById('startDate').addEventListener('change', function() {
             const startDate = new Date(this.value);
             const minEndDate = new Date(startDate);
-            minEndDate.setDate(minEndDate.getDate() + 1);
             document.getElementById('endDate').min = minEndDate.toISOString().split('T')[0];
             
             if (new Date(document.getElementById('endDate').value) < minEndDate) {
                 document.getElementById('endDate').value = minEndDate.toISOString().split('T')[0];
             }
+            updateReturnDateMin();
         });
+
+        document.getElementById('endDate').addEventListener('change', updateReturnDateMin);
 
         document.getElementById('btn-ar').addEventListener('click', () => switchLanguage('ar'));
         document.getElementById('btn-en').addEventListener('click', () => switchLanguage('en'));
@@ -962,7 +1075,8 @@ async function loadEmployeeBalance(employeeName) {
         document.addEventListener('DOMContentLoaded', function() {
             setupDates();
             switchLanguage('ar');
-            enableFormFields(false); // النموذج مقفل في البداية
+            enableFormFields(false);
+            toggleHourlyField();
         });
     </script>
 </body>
