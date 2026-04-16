@@ -68,6 +68,17 @@
         .help-text { font-size: 12px; color: #666; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
         .help-text i { color: var(--info); }
         .required-field::after { content: " *"; color: var(--danger); }
+        
+        /* تنسيقات إضافة عدة أشخاص */
+        .attendees-container { border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-top: 10px; background: white; }
+        .attendee-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 6px; }
+        .attendee-item select { flex: 1; margin-bottom: 0; }
+        .attendee-item button { background: var(--danger); color: white; border: none; width: 32px; height: 32px; border-radius: 5px; cursor: pointer; }
+        .add-attendee-btn { background: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; display: flex; align-items: center; gap: 5px; }
+        .add-attendee-btn:hover { background: var(--primary); }
+        .emails-list { margin-top: 10px; padding: 10px; background: #e8f4f8; border-radius: 8px; font-size: 13px; }
+        .emails-list i { color: var(--info); margin-left: 5px; }
+        
         @media (max-width: 768px) { .security-input-group { flex-direction: column; } .balance-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
@@ -143,24 +154,37 @@
                             <label class="required-field"><i class="fas fa-heading"></i> عنوان الاجتماع</label>
                             <input type="text" id="meetingTitle" required placeholder="مثال: اجتماع فريق البرامج">
                         </div>
+                        
+                        <!-- ✅ إضافة عدة أشخاص -->
                         <div class="form-group">
-                            <label class="required-field"><i class="fas fa-users"></i> مع من</label>
-                            <select id="meetingAttendee" required onchange="updateAttendeeEmail(); checkConflict()">
-                                <option value="">اختر الشخص</option>
-                                <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
-                                <option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option>
-                                <option value="سيلفارت سلوم">سيلفارت سلوم</option><option value="محمد الهادي">محمد الهادي</option>
-                                <option value="خناف شمو">خناف شمو</option><option value="عبد الحميد الحسين">عبد الحميد الحسين</option>
-                                <option value="هند الفارس">هند الفارس</option><option value="آلان خليل">آلان خليل</option>
-                                <option value="هبة المناديلي">هبة المناديلي</option><option value="عبد القادر سباغ">عبد القادر سباغ</option>
-                                <option value="لادي حامدي">لادي حامدي</option><option value="محمد بدور">محمد بدور</option>
-                                <option value="رشا دهنة">رشا دهنة</option><option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option>
-                                <option value="مالك أومو">مالك أومو</option><option value="حازم الزير">حازم الزير</option>
-                                <option value="فيلكس">فيلكس</option><option value="ريعان العاني">ريعان العاني</option>
-                                <option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option>
-                            </select>
+                            <label class="required-field"><i class="fas fa-users"></i> المدعوون</label>
+                            <div id="attendeesContainer" class="attendees-container">
+                                <div id="attendeesList">
+                                    <div class="attendee-item">
+                                        <select class="attendee-select" required>
+                                            <option value="">اختر الشخص</option>
+                                            <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
+                                            <option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option>
+                                            <option value="سيلفارت سلوم">سيلفارت سلوم</option><option value="محمد الهادي">محمد الهادي</option>
+                                            <option value="خناف شمو">خناف شمو</option><option value="عبد الحميد الحسين">عبد الحميد الحسين</option>
+                                            <option value="هند الفارس">هند الفارس</option><option value="آلان خليل">آلان خليل</option>
+                                            <option value="هبة المناديلي">هبة المناديلي</option><option value="عبد القادر سباغ">عبد القادر سباغ</option>
+                                            <option value="لادي حامدي">لادي حامدي</option><option value="محمد بدور">محمد بدور</option>
+                                            <option value="رشا دهنة">رشا دهنة</option><option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option>
+                                            <option value="مالك أومو">مالك أومو</option><option value="حازم الزير">حازم الزير</option>
+                                            <option value="فيلكس">فيلكس</option><option value="ريعان العاني">ريعان العاني</option>
+                                            <option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option>
+                                        </select>
+                                        <button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button>
+                                    </div>
+                                </div>
+                                <button type="button" class="add-attendee-btn" onclick="addAttendee()"><i class="fas fa-plus"></i> إضافة شخص آخر</button>
+                            </div>
+                            <div id="emailsPreview" class="emails-list" style="display: none;">
+                                <i class="fas fa-envelope"></i> سيتم إرسال الإشعار إلى: <span id="emailsPreviewText"></span>
+                            </div>
                         </div>
-                        <div class="form-group"><label><i class="fas fa-envelope"></i> بريد المشارك</label><input type="email" id="attendeeEmail" readonly class="readonly-field"></div>
+                        
                         <div class="form-group">
                             <label class="required-field"><i class="fas fa-calendar-day"></i> التاريخ</label>
                             <input type="date" id="meetingDate" required onchange="checkConflict()">
@@ -182,13 +206,12 @@
                         </div>
                         <div class="form-group"><label><i class="fas fa-hourglass-half"></i> المدة</label><select id="meetingDuration"><option value="30">30 دقيقة</option><option value="60" selected>1 ساعة</option><option value="90">1.5 ساعة</option><option value="120">2 ساعة</option></select></div>
                         
-                        <!-- ✅ حقل الرابط اليدوي (إلزامي) -->
                         <div class="form-group">
                             <label class="required-field"><i class="fas fa-link"></i> رابط Google Meet</label>
                             <input type="url" id="meetingLocation" required placeholder="https://meet.google.com/xxx-yyyy-zzz">
                             <div class="help-text">
                                 <i class="fas fa-info-circle"></i>
-                                كيفية الحصول على الرابط: اذهب إلى <a href="https://meet.google.com" target="_blank">meet.google.com</a> ← اضغط "بدء اجتماع" ← انسخ الرابط الطويل (مثال: https://meet.google.com/abc-defg-hij)
+                                كيفية الحصول على الرابط: اذهب إلى <a href="https://meet.google.com" target="_blank">meet.google.com</a> ← اضغط "بدء اجتماع" ← انسخ الرابط الطويل
                             </div>
                         </div>
                         
@@ -352,20 +375,103 @@
         document.getElementById('leaveType').addEventListener('change', function() { document.getElementById('hoursGroup').style.display = this.value === 'hourly' ? 'block' : 'none'; });
 
         // ============= دوال الاجتماعات =============
-        function updateAttendeeEmail() { const name = document.getElementById('meetingAttendee').value; document.getElementById('attendeeEmail').value = (name && employeesData[name]) ? employeesData[name].email : ''; }
-
+        
+        // إضافة شخص جديد
+        function addAttendee() {
+            const container = document.getElementById('attendeesList');
+            const newItem = document.createElement('div');
+            newItem.className = 'attendee-item';
+            newItem.innerHTML = `
+                <select class="attendee-select" required>
+                    <option value="">اختر الشخص</option>
+                    <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
+                    <option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option>
+                    <option value="سيلفارت سلوم">سيلفارت سلوم</option><option value="محمد الهادي">محمد الهادي</option>
+                    <option value="خناف شمو">خناف شمو</option><option value="عبد الحميد الحسين">عبد الحميد الحسين</option>
+                    <option value="هند الفارس">هند الفارس</option><option value="آلان خليل">آلان خليل</option>
+                    <option value="هبة المناديلي">هبة المناديلي</option><option value="عبد القادر سباغ">عبد القادر سباغ</option>
+                    <option value="لادي حامدي">لادي حامدي</option><option value="محمد بدور">محمد بدور</option>
+                    <option value="رشا دهنة">رشا دهنة</option><option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option>
+                    <option value="مالك أومو">مالك أومو</option><option value="حازم الزير">حازم الزير</option>
+                    <option value="فيلكس">فيلكس</option><option value="ريعان العاني">ريعان العاني</option>
+                    <option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option>
+                </select>
+                <button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button>
+            `;
+            container.appendChild(newItem);
+            updateEmailsPreview();
+            
+            // إضافة حدث للتحديث عند تغيير الاختيار
+            newItem.querySelector('.attendee-select').addEventListener('change', updateEmailsPreview);
+        }
+        
+        function removeAttendee(btn) {
+            const container = document.getElementById('attendeesList');
+            if (container.children.length > 1) {
+                btn.closest('.attendee-item').remove();
+                updateEmailsPreview();
+            } else {
+                alert('لا يمكن إزالة جميع المدعوين، يجب أن يكون هناك شخص واحد على الأقل');
+            }
+        }
+        
+        function updateEmailsPreview() {
+            const selects = document.querySelectorAll('.attendee-select');
+            const emails = [];
+            selects.forEach(select => {
+                const name = select.value;
+                if (name && employeesData[name]) {
+                    emails.push(`${name} (${employeesData[name].email})`);
+                }
+            });
+            
+            const previewDiv = document.getElementById('emailsPreview');
+            const previewText = document.getElementById('emailsPreviewText');
+            if (emails.length > 0) {
+                previewText.innerHTML = emails.join('، ');
+                previewDiv.style.display = 'block';
+            } else {
+                previewDiv.style.display = 'none';
+            }
+        }
+        
+        function getSelectedAttendees() {
+            const selects = document.querySelectorAll('.attendee-select');
+            const attendees = [];
+            selects.forEach(select => {
+                const name = select.value;
+                if (name && employeesData[name]) {
+                    attendees.push({
+                        name: name,
+                        email: employeesData[name].email
+                    });
+                }
+            });
+            return attendees;
+        }
+        
         function checkConflict() {
-            const attendee = document.getElementById('meetingAttendee').value;
             const date = document.getElementById('meetingDate').value;
             const time = document.getElementById('meetingTime').value;
+            const attendees = getSelectedAttendees();
             const warningDiv = document.getElementById('conflictWarning');
             const warningSpan = warningDiv.querySelector('span');
             
-            if (!attendee || !date || !time) { warningDiv.style.display = 'none'; return false; }
+            if (!date || !time || attendees.length === 0) { warningDiv.style.display = 'none'; return false; }
             
-            const conflict = meetings.find(m => m.attendee === attendee && m.date === date && m.time === time);
-            if (conflict) {
-                warningSpan.innerHTML = `⚠️ ${attendee} مشغول في هذا الوقت باجتماع "${conflict.title}"`;
+            let conflictFound = false;
+            let conflictNames = [];
+            
+            attendees.forEach(attendee => {
+                const conflict = meetings.find(m => m.attendees && m.attendees.some(a => a.name === attendee.name) && m.date === date && m.time === time);
+                if (conflict) {
+                    conflictFound = true;
+                    conflictNames.push(attendee.name);
+                }
+            });
+            
+            if (conflictFound) {
+                warningSpan.innerHTML = `⚠️ ${conflictNames.join('، ')} مشغول في هذا الوقت باجتماع آخر`;
                 warningDiv.style.display = 'block';
                 return true;
             } else {
@@ -374,25 +480,29 @@
             }
         }
 
-        // ✅ إرسال الإيميلات
-        async function sendMeetingEmails(meeting) {
+        // إرسال الإيميلات
+        async function sendMeetingEmails(meeting, attendees) {
             try {
-                const emailData = {
-                    action: 'sendMeetingEmails',
-                    meeting: meeting,
-                    organizer: {
-                        name: currentEmployee.name,
-                        email: currentEmployee.email
-                    }
-                };
-                console.log('📧 جاري إرسال طلب الإيميلات');
-                await fetch(LEAVE_SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify(emailData),
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                console.log('📧 تم إرسال طلب الإيميلات');
+                // إرسال إيميل واحد لكل مدعو
+                for (const attendee of attendees) {
+                    const emailData = {
+                        action: 'sendMeetingEmails',
+                        meeting: meeting,
+                        organizer: {
+                            name: currentEmployee.name,
+                            email: currentEmployee.email
+                        },
+                        attendee: attendee
+                    };
+                    console.log(`📧 جاري إرسال إيميل إلى: ${attendee.name}`);
+                    await fetch(LEAVE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: JSON.stringify(emailData),
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                console.log('📧 تم إرسال جميع الإيميلات');
                 return true;
             } catch (error) {
                 console.error('❌ خطأ في إرسال الإيميلات:', error);
@@ -407,7 +517,7 @@
             const container = document.getElementById('meetingsList');
             if (meetings.length === 0) { container.innerHTML = '<p style="color: #999; text-align: center;">لا توجد اجتماعات حالياً</p>'; return; }
             meetings.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-            container.innerHTML = meetings.map(m => `<div class="meeting-item"><h4>📌 ${m.title} <span class="meeting-badge">${m.duration} دقيقة</span></h4><p><i class="fas fa-user"></i> مع: ${m.attendee}</p><p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p><p><i class="fas fa-link"></i> <a href="${m.location}" target="_blank" class="meeting-link">رابط الاجتماع</a></p><div class="meeting-actions">${currentEmployee && m.createdBy === currentEmployee.name ? `<button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button>` : ''}</div></div>`).join('');
+            container.innerHTML = meetings.map(m => `<div class="meeting-item"><h4>📌 ${m.title} <span class="meeting-badge">${m.duration} دقيقة</span></h4><p><i class="fas fa-users"></i> المدعوون: ${m.attendees.map(a => a.name).join('، ')}</p><p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p><p><i class="fas fa-link"></i> <a href="${m.location}" target="_blank" class="meeting-link">رابط الاجتماع</a></p><div class="meeting-actions">${currentEmployee && m.createdBy === currentEmployee.name ? `<button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button>` : ''}</div></div>`).join('');
         }
 
         function cancelMeeting(id) { if (confirm('هل تريد إلغاء هذا الاجتماع؟')) { meetings = meetings.filter(m => m.id !== id); saveMeetings(); renderMeetingsList(); renderCalendar(); alert('✅ تم إلغاء الاجتماع'); } }
@@ -438,8 +548,15 @@
                 return;
             }
             
+            // جلب المدعوين
+            const attendees = getSelectedAttendees();
+            if (attendees.length === 0) {
+                alert('⚠️ الرجاء إضافة شخص واحد على الأقل');
+                return;
+            }
+            
             if (checkConflict()) {
-                document.getElementById('meetingError').innerHTML = '⚠️ لا يمكن حجز الاجتماع لأن هذا الشخص مشغول في هذا الوقت';
+                document.getElementById('meetingError').innerHTML = '⚠️ لا يمكن حجز الاجتماع لأن أحد المدعوين مشغول في هذا الوقت';
                 document.getElementById('meetingError').style.display = 'block';
                 setTimeout(() => { document.getElementById('meetingError').style.display = 'none'; }, 3000);
                 return;
@@ -448,8 +565,7 @@
             const meeting = {
                 id: Date.now().toString(),
                 title: document.getElementById('meetingTitle').value,
-                attendee: document.getElementById('meetingAttendee').value,
-                attendeeEmail: document.getElementById('attendeeEmail').value,
+                attendees: attendees,
                 date: document.getElementById('meetingDate').value,
                 time: document.getElementById('meetingTime').value,
                 duration: document.getElementById('meetingDuration').value,
@@ -459,20 +575,37 @@
                 createdAt: new Date().toISOString()
             };
             
-            if (!meeting.attendee || !meeting.date || !meeting.time) { alert('الرجاء إكمال جميع الحقول المطلوبة'); return; }
-            
             document.getElementById('meetingLoader').style.display = 'block';
             
             meetings.push(meeting);
             saveMeetings();
             
-            await sendMeetingEmails(meeting);
+            await sendMeetingEmails(meeting, attendees);
             
             document.getElementById('meetingLoader').style.display = 'none';
-            document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح!<br>🔗 رابط الاجتماع: <a href="${meeting.location}" target="_blank">${meeting.location}</a>`;
+            document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح! تم إرسال الإشعار إلى ${attendees.length} شخص.<br>🔗 رابط الاجتماع: <a href="${meeting.location}" target="_blank">${meeting.location}</a>`;
             document.getElementById('meetingSuccess').style.display = 'block';
             document.getElementById('meetingForm').reset();
-            document.getElementById('attendeeEmail').value = '';
+            document.getElementById('attendeesList').innerHTML = `
+                <div class="attendee-item">
+                    <select class="attendee-select" required>
+                        <option value="">اختر الشخص</option>
+                        <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
+                        <option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option>
+                        <option value="سيلفارت سلوم">سيلفارت سلوم</option><option value="محمد الهادي">محمد الهادي</option>
+                        <option value="خناف شمو">خناف شمو</option><option value="عبد الحميد الحسين">عبد الحميد الحسين</option>
+                        <option value="هند الفارس">هند الفارس</option><option value="آلان خليل">آلان خليل</option>
+                        <option value="هبة المناديلي">هبة المناديلي</option><option value="عبد القادر سباغ">عبد القادر سباغ</option>
+                        <option value="لادي حامدي">لادي حامدي</option><option value="محمد بدور">محمد بدور</option>
+                        <option value="رشا دهنة">رشا دهنة</option><option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option>
+                        <option value="مالك أومو">مالك أومو</option><option value="حازم الزير">حازم الزير</option>
+                        <option value="فيلكس">فيلكس</option><option value="ريعان العاني">ريعان العاني</option>
+                        <option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option>
+                    </select>
+                    <button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            document.getElementById('emailsPreview').style.display = 'none';
             
             setTimeout(() => { document.getElementById('meetingSuccess').style.display = 'none'; }, 5000);
             renderMeetingsList();
@@ -487,11 +620,17 @@
             document.getElementById('meetingDate').value = today;
         }
 
-        document.getElementById('meetingAttendee').addEventListener('change', updateAttendeeEmail);
         document.getElementById('meetingDate').addEventListener('change', checkConflict);
         document.getElementById('meetingTime').addEventListener('change', checkConflict);
-
-        document.addEventListener('DOMContentLoaded', function() { setupDates(); loadMeetings(); renderCalendar(); });
+        
+        // إضافة حدث التحديث للمدعوين
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDates(); 
+            loadMeetings(); 
+            renderCalendar();
+            // إضافة حدث التحديث للقائمة الأولية
+            document.querySelector('.attendee-select')?.addEventListener('change', updateEmailsPreview);
+        });
     </script>
 </body>
 </html>
