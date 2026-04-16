@@ -10,7 +10,7 @@
         :root { --primary: #3C6255; --secondary: #9CAF88; --accent: #FFD700; --dark: #2A4A3D; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --info: #17a2b8; }
         body { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); min-height: 100vh; color: #333; }
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
-        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%); color: white; padding: 25px 0; text-align: center; border-radius: 15px 15px 0 0; margin-bottom: 0; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%); color: white; padding: 25px 0; text-align: center; border-radius: 15px 15px 0 0; }
         .logo { background: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
         .logo i { color: var(--primary); font-size: 36px; }
         .header h1 { font-size: 32px; margin-bottom: 10px; }
@@ -47,9 +47,10 @@
         .meetings-list { margin-top: 20px; max-height: 350px; overflow-y: auto; }
         .meeting-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid var(--info); }
         .meeting-item h4 { color: var(--dark); margin-bottom: 8px; }
-        .meeting-actions { margin-top: 10px; display: flex; gap: 10px; }
+        .meeting-item p { font-size: 13px; color: #666; margin: 5px 0; }
+        .meeting-actions { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
         .meeting-actions button { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
-        .meeting-link { background: var(--info); color: white; padding: 4px 10px; border-radius: 5px; text-decoration: none; font-size: 12px; display: inline-block; }
+        .meeting-link { background: var(--info); color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 12px; display: inline-block; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark); }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
@@ -58,11 +59,12 @@
         .readonly-field { background-color: #f0f0f0 !important; cursor: not-allowed; }
         .alert { padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; display: none; }
         .alert-success { background: #d4edda; color: var(--success); }
+        .alert-danger { background: #f8d7da; color: var(--danger); }
         .loader { text-align: center; margin: 20px 0; display: none; }
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--secondary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .footer { text-align: center; padding: 30px 0; color: #666; font-size: 14px; border-top: 1px solid #eee; margin-top: 30px; }
-        .meeting-badge { display: inline-block; background: var(--warning); color: #333; padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 8px; }
+        .conflict-warning { background: #fff3cd; border: 1px solid var(--warning); color: #856404; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; }
         @media (max-width: 768px) { .security-input-group { flex-direction: column; } .balance-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
@@ -79,7 +81,7 @@
             <button class="tab-btn disabled" id="meetingTabBtn" onclick="switchTab('meeting')"><i class="fas fa-video"></i> حجز الاجتماعات 🔒</button>
         </div>
 
-        <!-- ========== تبويب الإجازات (مرتبط بـ Apps Script) ========== -->
+        <!-- ========== تبويب الإجازات ========== -->
         <div id="leaveTab" class="tab-content active">
             <div class="security-section">
                 <h3><i class="fas fa-shield-alt"></i> رمز الأمان</h3>
@@ -137,7 +139,7 @@
                         <div class="form-group"><label>عنوان الاجتماع *</label><input type="text" id="meetingTitle" required placeholder="مثال: اجتماع فريق البرامج"></div>
                         <div class="form-group">
                             <label>مع من *</label>
-                            <select id="meetingAttendee" required onchange="updateAttendeeEmail()">
+                            <select id="meetingAttendee" required onchange="updateAttendeeEmail(); checkConflict()">
                                 <option value="">اختر الشخص</option>
                                 <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
                                 <option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option>
@@ -153,10 +155,10 @@
                             </select>
                         </div>
                         <div class="form-group"><label>بريد المشارك</label><input type="email" id="attendeeEmail" readonly class="readonly-field"></div>
-                        <div class="form-group"><label>التاريخ *</label><input type="date" id="meetingDate" required></div>
+                        <div class="form-group"><label>التاريخ *</label><input type="date" id="meetingDate" required onchange="checkConflict()"></div>
                         <div class="form-group">
                             <label>الوقت *</label>
-                            <select id="meetingTime" required>
+                            <select id="meetingTime" required onchange="checkConflict()">
                                 <option value="">اختر الوقت</option>
                                 <option value="09:00">09:00 صباحاً</option><option value="09:30">09:30 صباحاً</option>
                                 <option value="10:00">10:00 صباحاً</option><option value="10:30">10:30 صباحاً</option>
@@ -170,10 +172,12 @@
                             </select>
                         </div>
                         <div class="form-group"><label>المدة</label><select id="meetingDuration"><option value="30">30 دقيقة</option><option value="60" selected>1 ساعة</option><option value="90">1.5 ساعة</option><option value="120">2 ساعة</option></select></div>
-                        <div class="form-group"><label>المكان / الرابط</label><input type="text" id="meetingLocation" placeholder="غرفة الاجتماعات أو رابط Google Meet"></div>
+                        <div class="form-group"><label>المكان / الرابط</label><input type="text" id="meetingLocation" placeholder="غرفة الاجتماعات (سيتم إنشاء رابط تلقائياً)"></div>
                         <div class="form-group"><label>وصف الاجتماع</label><textarea id="meetingDescription" rows="2" placeholder="أهداف الاجتماع..."></textarea></div>
+                        <div id="conflictWarning" class="conflict-warning"><i class="fas fa-exclamation-triangle"></i> <span></span></div>
                         <button type="submit" class="submit-btn"><i class="fas fa-calendar-check"></i> حجز الاجتماع</button>
                         <div id="meetingSuccess" class="alert alert-success"></div>
+                        <div id="meetingError" class="alert alert-danger"></div>
                         <div class="loader" id="meetingLoader"><div class="spinner"></div></div>
                     </form>
                 </div>
@@ -195,10 +199,10 @@
     </div>
 
     <script>
-        // ============= ✅ رابط Google Apps Script الحقيقي للإجازات =============
+        // ============= رابط Google Apps Script =============
         const LEAVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
 
-        // ============= بيانات الموظفين (لرمز الأمان والإيميلات) =============
+        // ============= بيانات الموظفين =============
         const employeesData = {
             "مهيدي الخالدي": { email: "malkhaldi@dar.ngo", dept: "المراقبة والتقييم", code: "ME_001" },
             "نانسي حلاق": { email: "nhallak@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" },
@@ -247,7 +251,7 @@
 
         function unlockMeetingsTab() { isLoggedIn = true; document.getElementById('meetingTabBtn').classList.remove('disabled'); document.getElementById('meetingTabBtn').innerHTML = '<i class="fas fa-video"></i> حجز الاجتماعات'; }
 
-        // ============= دوال الإجازات (مع رابط Apps Script) =============
+        // ============= دوال الإجازات =============
         function verifySecurityCode() {
             const code = document.getElementById('securityCode').value.trim();
             const errorDiv = document.getElementById('securityError');
@@ -330,15 +334,72 @@
 
         // ============= دوال الاجتماعات =============
         function updateAttendeeEmail() { const name = document.getElementById('meetingAttendee').value; document.getElementById('attendeeEmail').value = (name && employeesData[name]) ? employeesData[name].email : ''; }
+
+        function checkConflict() {
+            const attendee = document.getElementById('meetingAttendee').value;
+            const date = document.getElementById('meetingDate').value;
+            const time = document.getElementById('meetingTime').value;
+            const warningDiv = document.getElementById('conflictWarning');
+            const warningSpan = warningDiv.querySelector('span');
+            
+            if (!attendee || !date || !time) { warningDiv.style.display = 'none'; return false; }
+            
+            const conflict = meetings.find(m => m.attendee === attendee && m.date === date && m.time === time);
+            if (conflict) {
+                warningSpan.innerHTML = `⚠️ ${attendee} مشغول في هذا الوقت باجتماع "${conflict.title}"`;
+                warningDiv.style.display = 'block';
+                return true;
+            } else {
+                warningDiv.style.display = 'none';
+                return false;
+            }
+        }
+
+        function generateMeetLink() { return `https://meet.google.com/${Math.random().toString(36).substring(2, 15)}`; }
+
+        // ✅ دالة إرسال الإيميلات (الموجودة في Apps Script)
+        async function sendMeetingEmails(meeting) {
+            try {
+                const emailData = {
+                    action: 'sendMeetingEmails',
+                    meeting: meeting,
+                    organizer: {
+                        name: currentEmployee.name,
+                        email: currentEmployee.email
+                    }
+                };
+                
+                console.log('📧 جاري إرسال طلب الإيميلات إلى:', LEAVE_SCRIPT_URL);
+                console.log('📦 البيانات المرسلة:', emailData);
+                
+                await fetch(LEAVE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(emailData),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                console.log('📧 تم إرسال طلب الإيميلات بنجاح');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ خطأ في إرسال الإيميلات:', error);
+                return false;
+            }
+        }
+
         function loadMeetings() { const saved = localStorage.getItem('dar_meetings'); meetings = saved ? JSON.parse(saved) : []; const today = new Date().toISOString().split('T')[0]; meetings = meetings.filter(m => m.date >= today); saveMeetings(); renderMeetingsList(); }
         function saveMeetings() { localStorage.setItem('dar_meetings', JSON.stringify(meetings)); }
+        
         function renderMeetingsList() {
             const container = document.getElementById('meetingsList');
             if (meetings.length === 0) { container.innerHTML = '<p style="color: #999; text-align: center;">لا توجد اجتماعات حالياً</p>'; return; }
             meetings.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-            container.innerHTML = meetings.map(m => `<div class="meeting-item"><h4>📌 ${m.title} <span class="meeting-badge">${m.duration} دقيقة</span></h4><p><i class="fas fa-user"></i> مع: ${m.attendee}</p><p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p>${m.location ? `<p><i class="fas fa-location-dot"></i> ${m.location}</p>` : ''}${m.description ? `<p><i class="fas fa-align-left"></i> ${m.description.substring(0, 60)}</p>` : ''}<div class="meeting-actions">${currentEmployee && m.createdBy === currentEmployee.name ? `<button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button>` : ''}${m.location && m.location.includes('meet.google.com') ? `<a href="${m.location}" target="_blank" class="meeting-link"><i class="fas fa-video"></i> انضم للاجتماع</a>` : ''}</div></div>`).join('');
+            container.innerHTML = meetings.map(m => `<div class="meeting-item"><h4>📌 ${m.title} <span class="meeting-badge">${m.duration} دقيقة</span></h4><p><i class="fas fa-user"></i> مع: ${m.attendee}</p><p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p>${m.location ? `<p><i class="fas fa-video"></i> ${m.location}</p>` : ''}<div class="meeting-actions">${currentEmployee && m.createdBy === currentEmployee.name ? `<button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button>` : ''}${m.location && m.location.includes('meet.google.com') ? `<a href="${m.location}" target="_blank" class="meeting-link"><i class="fas fa-video"></i> انضم للاجتماع</a>` : ''}</div></div>`).join('');
         }
+
         function cancelMeeting(id) { if (confirm('هل تريد إلغاء هذا الاجتماع؟')) { meetings = meetings.filter(m => m.id !== id); saveMeetings(); renderMeetingsList(); renderCalendar(); alert('✅ تم إلغاء الاجتماع'); } }
+
         function renderCalendar() {
             const year = currentDate.getFullYear(), month = currentDate.getMonth(), firstDay = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0), startDay = firstDay.getDay(), daysInMonth = lastDay.getDate();
             document.getElementById('currentMonth').innerHTML = `${firstDay.toLocaleDateString('ar-EG', { month: 'long' })} ${year}`;
@@ -350,30 +411,54 @@
             const remaining = 42 - (prevMonthDays + daysInMonth); for (let d = 1; d <= remaining; d++) { grid += `<div class="calendar-day other-month">${d}</div>`; }
             document.getElementById('calendarGrid').innerHTML = grid;
         }
-        function selectDate(dateStr) { selectedDate = dateStr; document.getElementById('meetingDate').value = dateStr; renderCalendar(); }
+
+        function selectDate(dateStr) { selectedDate = dateStr; document.getElementById('meetingDate').value = dateStr; renderCalendar(); checkConflict(); }
         function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); }
-        function generateMeetLink() { return `https://meet.google.com/${Math.random().toString(36).substring(2, 10)}`; }
 
         document.getElementById('meetingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             if (!currentEmployee) { alert('الرجاء تسجيل الدخول أولاً'); return; }
+            
+            if (checkConflict()) {
+                document.getElementById('meetingError').innerHTML = '⚠️ لا يمكن حجز الاجتماع لأن هذا الشخص مشغول في هذا الوقت';
+                document.getElementById('meetingError').style.display = 'block';
+                setTimeout(() => { document.getElementById('meetingError').style.display = 'none'; }, 3000);
+                return;
+            }
+            
             const meeting = {
-                id: Date.now().toString(), title: document.getElementById('meetingTitle').value,
-                attendee: document.getElementById('meetingAttendee').value, attendeeEmail: document.getElementById('attendeeEmail').value,
-                date: document.getElementById('meetingDate').value, time: document.getElementById('meetingTime').value,
+                id: Date.now().toString(),
+                title: document.getElementById('meetingTitle').value,
+                attendee: document.getElementById('meetingAttendee').value,
+                attendeeEmail: document.getElementById('attendeeEmail').value,
+                date: document.getElementById('meetingDate').value,
+                time: document.getElementById('meetingTime').value,
                 duration: document.getElementById('meetingDuration').value,
                 location: document.getElementById('meetingLocation').value || generateMeetLink(),
-                description: document.getElementById('meetingDescription').value, createdBy: currentEmployee.name, createdAt: new Date().toISOString()
+                description: document.getElementById('meetingDescription').value,
+                createdBy: currentEmployee.name,
+                createdAt: new Date().toISOString()
             };
+            
             if (!meeting.attendee || !meeting.date || !meeting.time) { alert('الرجاء إكمال جميع الحقول المطلوبة'); return; }
+            
             document.getElementById('meetingLoader').style.display = 'block';
-            meetings.push(meeting); saveMeetings();
+            
+            meetings.push(meeting);
+            saveMeetings();
+            
+            // ✅ إرسال الإيميلات
+            await sendMeetingEmails(meeting);
+            
             document.getElementById('meetingLoader').style.display = 'none';
-            document.getElementById('meetingSuccess').innerHTML = '✅ تم حجز الاجتماع بنجاح! تم إرسال إشعار للمشارك.';
+            document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح!${meeting.location.includes('meet.google.com') ? `\nرابط الاجتماع: ${meeting.location}` : ''}`;
             document.getElementById('meetingSuccess').style.display = 'block';
-            document.getElementById('meetingForm').reset(); document.getElementById('attendeeEmail').value = '';
+            document.getElementById('meetingForm').reset();
+            document.getElementById('attendeeEmail').value = '';
+            
             setTimeout(() => { document.getElementById('meetingSuccess').style.display = 'none'; }, 5000);
-            renderMeetingsList(); renderCalendar();
+            renderMeetingsList();
+            renderCalendar();
         });
 
         function setupDates() {
@@ -383,6 +468,10 @@
             document.getElementById('returnDate').value = tomorrow.toISOString().split('T')[0];
             document.getElementById('meetingDate').value = today;
         }
+
+        document.getElementById('meetingAttendee').addEventListener('change', updateAttendeeEmail);
+        document.getElementById('meetingDate').addEventListener('change', checkConflict);
+        document.getElementById('meetingTime').addEventListener('change', checkConflict);
 
         document.addEventListener('DOMContentLoaded', function() { setupDates(); loadMeetings(); renderCalendar(); });
     </script>
