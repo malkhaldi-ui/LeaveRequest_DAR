@@ -65,6 +65,9 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .footer { text-align: center; padding: 30px 0; color: #666; font-size: 14px; border-top: 1px solid #eee; margin-top: 30px; }
         .conflict-warning { background: #fff3cd; border: 1px solid var(--warning); color: #856404; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; }
+        .help-text { font-size: 12px; color: #666; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+        .help-text i { color: var(--info); }
+        .required-field::after { content: " *"; color: var(--danger); }
         @media (max-width: 768px) { .security-input-group { flex-direction: column; } .balance-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
@@ -136,9 +139,12 @@
                 <div class="meeting-form-card">
                     <h3><i class="fas fa-calendar-plus"></i> حجز اجتماع جديد</h3>
                     <form id="meetingForm">
-                        <div class="form-group"><label>عنوان الاجتماع *</label><input type="text" id="meetingTitle" required placeholder="مثال: اجتماع فريق البرامج"></div>
                         <div class="form-group">
-                            <label>مع من *</label>
+                            <label class="required-field"><i class="fas fa-heading"></i> عنوان الاجتماع</label>
+                            <input type="text" id="meetingTitle" required placeholder="مثال: اجتماع فريق البرامج">
+                        </div>
+                        <div class="form-group">
+                            <label class="required-field"><i class="fas fa-users"></i> مع من</label>
                             <select id="meetingAttendee" required onchange="updateAttendeeEmail(); checkConflict()">
                                 <option value="">اختر الشخص</option>
                                 <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
@@ -154,10 +160,13 @@
                                 <option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>بريد المشارك</label><input type="email" id="attendeeEmail" readonly class="readonly-field"></div>
-                        <div class="form-group"><label>التاريخ *</label><input type="date" id="meetingDate" required onchange="checkConflict()"></div>
+                        <div class="form-group"><label><i class="fas fa-envelope"></i> بريد المشارك</label><input type="email" id="attendeeEmail" readonly class="readonly-field"></div>
                         <div class="form-group">
-                            <label>الوقت *</label>
+                            <label class="required-field"><i class="fas fa-calendar-day"></i> التاريخ</label>
+                            <input type="date" id="meetingDate" required onchange="checkConflict()">
+                        </div>
+                        <div class="form-group">
+                            <label class="required-field"><i class="fas fa-clock"></i> الوقت</label>
                             <select id="meetingTime" required onchange="checkConflict()">
                                 <option value="">اختر الوقت</option>
                                 <option value="09:00">09:00 صباحاً</option><option value="09:30">09:30 صباحاً</option>
@@ -171,9 +180,19 @@
                                 <option value="17:00">05:00 مساءً</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>المدة</label><select id="meetingDuration"><option value="30">30 دقيقة</option><option value="60" selected>1 ساعة</option><option value="90">1.5 ساعة</option><option value="120">2 ساعة</option></select></div>
-                        <div class="form-group"><label>المكان / الرابط</label><input type="text" id="meetingLocation" placeholder="غرفة الاجتماعات (سيتم إنشاء رابط تلقائياً)"></div>
-                        <div class="form-group"><label>وصف الاجتماع</label><textarea id="meetingDescription" rows="2" placeholder="أهداف الاجتماع..."></textarea></div>
+                        <div class="form-group"><label><i class="fas fa-hourglass-half"></i> المدة</label><select id="meetingDuration"><option value="30">30 دقيقة</option><option value="60" selected>1 ساعة</option><option value="90">1.5 ساعة</option><option value="120">2 ساعة</option></select></div>
+                        
+                        <!-- ✅ حقل الرابط اليدوي (إلزامي) -->
+                        <div class="form-group">
+                            <label class="required-field"><i class="fas fa-link"></i> رابط Google Meet</label>
+                            <input type="url" id="meetingLocation" required placeholder="https://meet.google.com/xxx-yyyy-zzz">
+                            <div class="help-text">
+                                <i class="fas fa-info-circle"></i>
+                                كيفية الحصول على الرابط: اذهب إلى <a href="https://meet.google.com" target="_blank">meet.google.com</a> ← اضغط "بدء اجتماع" ← انسخ الرابط الطويل (مثال: https://meet.google.com/abc-defg-hij)
+                            </div>
+                        </div>
+                        
+                        <div class="form-group"><label><i class="fas fa-align-left"></i> وصف الاجتماع</label><textarea id="meetingDescription" rows="2" placeholder="أهداف الاجتماع..."></textarea></div>
                         <div id="conflictWarning" class="conflict-warning"><i class="fas fa-exclamation-triangle"></i> <span></span></div>
                         <button type="submit" class="submit-btn"><i class="fas fa-calendar-check"></i> حجز الاجتماع</button>
                         <div id="meetingSuccess" class="alert alert-success"></div>
@@ -355,9 +374,7 @@
             }
         }
 
-        function generateMeetLink() { return `https://meet.google.com/${Math.random().toString(36).substring(2, 15)}`; }
-
-        // ✅ دالة إرسال الإيميلات (الموجودة في Apps Script)
+        // ✅ إرسال الإيميلات
         async function sendMeetingEmails(meeting) {
             try {
                 const emailData = {
@@ -368,20 +385,15 @@
                         email: currentEmployee.email
                     }
                 };
-                
-                console.log('📧 جاري إرسال طلب الإيميلات إلى:', LEAVE_SCRIPT_URL);
-                console.log('📦 البيانات المرسلة:', emailData);
-                
+                console.log('📧 جاري إرسال طلب الإيميلات');
                 await fetch(LEAVE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     body: JSON.stringify(emailData),
                     headers: { 'Content-Type': 'application/json' }
                 });
-                
-                console.log('📧 تم إرسال طلب الإيميلات بنجاح');
+                console.log('📧 تم إرسال طلب الإيميلات');
                 return true;
-                
             } catch (error) {
                 console.error('❌ خطأ في إرسال الإيميلات:', error);
                 return false;
@@ -395,7 +407,7 @@
             const container = document.getElementById('meetingsList');
             if (meetings.length === 0) { container.innerHTML = '<p style="color: #999; text-align: center;">لا توجد اجتماعات حالياً</p>'; return; }
             meetings.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-            container.innerHTML = meetings.map(m => `<div class="meeting-item"><h4>📌 ${m.title} <span class="meeting-badge">${m.duration} دقيقة</span></h4><p><i class="fas fa-user"></i> مع: ${m.attendee}</p><p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p>${m.location ? `<p><i class="fas fa-video"></i> ${m.location}</p>` : ''}<div class="meeting-actions">${currentEmployee && m.createdBy === currentEmployee.name ? `<button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button>` : ''}${m.location && m.location.includes('meet.google.com') ? `<a href="${m.location}" target="_blank" class="meeting-link"><i class="fas fa-video"></i> انضم للاجتماع</a>` : ''}</div></div>`).join('');
+            container.innerHTML = meetings.map(m => `<div class="meeting-item"><h4>📌 ${m.title} <span class="meeting-badge">${m.duration} دقيقة</span></h4><p><i class="fas fa-user"></i> مع: ${m.attendee}</p><p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p><p><i class="fas fa-link"></i> <a href="${m.location}" target="_blank" class="meeting-link">رابط الاجتماع</a></p><div class="meeting-actions">${currentEmployee && m.createdBy === currentEmployee.name ? `<button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button>` : ''}</div></div>`).join('');
         }
 
         function cancelMeeting(id) { if (confirm('هل تريد إلغاء هذا الاجتماع؟')) { meetings = meetings.filter(m => m.id !== id); saveMeetings(); renderMeetingsList(); renderCalendar(); alert('✅ تم إلغاء الاجتماع'); } }
@@ -419,6 +431,13 @@
             e.preventDefault();
             if (!currentEmployee) { alert('الرجاء تسجيل الدخول أولاً'); return; }
             
+            // التحقق من صحة رابط Google Meet
+            const meetingLink = document.getElementById('meetingLocation').value.trim();
+            if (!meetingLink.includes('meet.google.com')) {
+                alert('⚠️ الرجاء إدخال رابط Google Meet صحيح (يجب أن يبدأ بـ https://meet.google.com/)');
+                return;
+            }
+            
             if (checkConflict()) {
                 document.getElementById('meetingError').innerHTML = '⚠️ لا يمكن حجز الاجتماع لأن هذا الشخص مشغول في هذا الوقت';
                 document.getElementById('meetingError').style.display = 'block';
@@ -434,7 +453,7 @@
                 date: document.getElementById('meetingDate').value,
                 time: document.getElementById('meetingTime').value,
                 duration: document.getElementById('meetingDuration').value,
-                location: document.getElementById('meetingLocation').value || generateMeetLink(),
+                location: meetingLink,
                 description: document.getElementById('meetingDescription').value,
                 createdBy: currentEmployee.name,
                 createdAt: new Date().toISOString()
@@ -447,11 +466,10 @@
             meetings.push(meeting);
             saveMeetings();
             
-            // ✅ إرسال الإيميلات
             await sendMeetingEmails(meeting);
             
             document.getElementById('meetingLoader').style.display = 'none';
-            document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح!${meeting.location.includes('meet.google.com') ? `\nرابط الاجتماع: ${meeting.location}` : ''}`;
+            document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح!<br>🔗 رابط الاجتماع: <a href="${meeting.location}" target="_blank">${meeting.location}</a>`;
             document.getElementById('meetingSuccess').style.display = 'block';
             document.getElementById('meetingForm').reset();
             document.getElementById('attendeeEmail').value = '';
