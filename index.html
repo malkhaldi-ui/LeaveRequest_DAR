@@ -68,8 +68,6 @@
         .help-text { font-size: 12px; color: #666; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
         .help-text i { color: var(--info); }
         .required-field::after { content: " *"; color: var(--danger); }
-        
-        /* تنسيقات إضافة عدة أشخاص */
         .attendees-container { border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-top: 10px; background: white; }
         .attendee-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 6px; }
         .attendee-item select { flex: 1; margin-bottom: 0; }
@@ -77,8 +75,6 @@
         .add-attendee-btn { background: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; display: flex; align-items: center; gap: 5px; }
         .add-attendee-btn:hover { background: var(--primary); }
         .emails-list { margin-top: 10px; padding: 10px; background: #e8f4f8; border-radius: 8px; font-size: 13px; }
-        .emails-list i { color: var(--info); margin-left: 5px; }
-        
         @media (max-width: 768px) { .security-input-group { flex-direction: column; } .balance-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
@@ -95,7 +91,7 @@
             <button class="tab-btn disabled" id="meetingTabBtn" onclick="switchTab('meeting')"><i class="fas fa-video"></i> حجز الاجتماعات 🔒</button>
         </div>
 
-        <!-- ========== تبويب الإجازات ========== -->
+        <!-- تبويب الإجازات -->
         <div id="leaveTab" class="tab-content active">
             <div class="security-section">
                 <h3><i class="fas fa-shield-alt"></i> رمز الأمان</h3>
@@ -144,7 +140,7 @@
             </div>
         </div>
 
-        <!-- ========== تبويب الاجتماعات ========== -->
+        <!-- تبويب الاجتماعات -->
         <div id="meetingTab" class="tab-content">
             <div class="meeting-layout">
                 <div class="meeting-form-card">
@@ -155,7 +151,6 @@
                             <input type="text" id="meetingTitle" required placeholder="مثال: اجتماع فريق البرامج">
                         </div>
                         
-                        <!-- ✅ إضافة عدة أشخاص -->
                         <div class="form-group">
                             <label class="required-field"><i class="fas fa-users"></i> المدعوون</label>
                             <div id="attendeesContainer" class="attendees-container">
@@ -163,17 +158,30 @@
                                     <div class="attendee-item">
                                         <select class="attendee-select" required>
                                             <option value="">اختر الشخص</option>
-                                            <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
-                                            <option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option>
-                                            <option value="سيلفارت سلوم">سيلفارت سلوم</option><option value="محمد الهادي">محمد الهادي</option>
-                                            <option value="خناف شمو">خناف شمو</option><option value="عبد الحميد الحسين">عبد الحميد الحسين</option>
-                                            <option value="هند الفارس">هند الفارس</option><option value="آلان خليل">آلان خليل</option>
-                                            <option value="هبة المناديلي">هبة المناديلي</option><option value="عبد القادر سباغ">عبد القادر سباغ</option>
-                                            <option value="لادي حامدي">لادي حامدي</option><option value="محمد بدور">محمد بدور</option>
-                                            <option value="رشا دهنة">رشا دهنة</option><option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option>
-                                            <option value="مالك أومو">مالك أومو</option><option value="حازم الزير">حازم الزير</option>
-                                            <option value="فيلكس">فيلكس</option><option value="ريعان العاني">ريعان العاني</option>
-                                            <option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option>
+                                            <option value="مهيدي الخالدي">مهيدي الخالدي</option>
+                                            <option value="نانسي حلاق">نانسي حلاق</option>
+                                            <option value="سلاف أبو حمدان">سلاف أبو حمدان</option>
+                                            <option value="رغد العبو">رغد العبو</option>
+                                            <option value="سيلفارت سلوم">سيلفارت سلوم</option>
+                                            <option value="محمد الهادي">محمد الهادي</option>
+                                            <option value="خناف شمو">خناف شمو</option>
+                                            <option value="عبد الحميد الحسين">عبد الحميد الحسين</option>
+                                            <option value="هند الفارس">هند الفارس</option>
+                                            <option value="آلان خليل">آلان خليل</option>
+                                            <option value="هبة المناديلي">هبة المناديلي</option>
+                                            <option value="عبد القادر سباغ">عبد القادر سباغ</option>
+                                            <option value="لادي حامدي">لادي حامدي</option>
+                                            <option value="محمد بدور">محمد بدور</option>
+                                            <option value="رشا دهنة">رشا دهنة</option>
+                                            <option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option>
+                                            <option value="مالك أومو">مالك أومو</option>
+                                            <option value="حازم الزير">حازم الزير</option>
+                                            <option value="فيلكس">فيلكس</option>
+                                            <option value="ريعان العاني">ريعان العاني</option>
+                                            <option value="عصمت بكر">عصمت بكر</option>
+                                            <option value="سمر قطان">سمر قطان</option>
+                                            <option value="ربى علي">ربى علي</option>
+                                            <option value="حسن الحسين">حسن الحسين</option>
                                         </select>
                                         <button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button>
                                     </div>
@@ -187,21 +195,20 @@
                         
                         <div class="form-group">
                             <label class="required-field"><i class="fas fa-calendar-day"></i> التاريخ</label>
-                            <input type="date" id="meetingDate" required onchange="checkConflict()">
+                            <input type="date" id="meetingDate" required>
                         </div>
                         <div class="form-group">
                             <label class="required-field"><i class="fas fa-clock"></i> الوقت</label>
-                            <select id="meetingTime" required onchange="checkConflict()">
+                            <select id="meetingTime" required>
                                 <option value="">اختر الوقت</option>
-                                <option value="09:00">09:00 صباحاً</option><option value="09:30">09:30 صباحاً</option>
-                                <option value="10:00">10:00 صباحاً</option><option value="10:30">10:30 صباحاً</option>
-                                <option value="11:00">11:00 صباحاً</option><option value="11:30">11:30 صباحاً</option>
-                                <option value="12:00">12:00 ظهراً</option><option value="12:30">12:30 ظهراً</option>
-                                <option value="13:00">01:00 مساءً</option><option value="13:30">01:30 مساءً</option>
-                                <option value="14:00">02:00 مساءً</option><option value="14:30">02:30 مساءً</option>
-                                <option value="15:00">03:00 مساءً</option><option value="15:30">03:30 مساءً</option>
-                                <option value="16:00">04:00 مساءً</option><option value="16:30">04:30 مساءً</option>
-                                <option value="17:00">05:00 مساءً</option>
+                                <option value="09:00">09:00 صباحاً</option>
+                                <option value="10:00">10:00 صباحاً</option>
+                                <option value="11:00">11:00 صباحاً</option>
+                                <option value="12:00">12:00 ظهراً</option>
+                                <option value="13:00">01:00 مساءً</option>
+                                <option value="14:00">02:00 مساءً</option>
+                                <option value="15:00">03:00 مساءً</option>
+                                <option value="16:00">04:00 مساءً</option>
                             </select>
                         </div>
                         <div class="form-group"><label><i class="fas fa-hourglass-half"></i> المدة</label><select id="meetingDuration"><option value="30">30 دقيقة</option><option value="60" selected>1 ساعة</option><option value="90">1.5 ساعة</option><option value="120">2 ساعة</option></select></div>
@@ -209,14 +216,9 @@
                         <div class="form-group">
                             <label class="required-field"><i class="fas fa-link"></i> رابط Google Meet</label>
                             <input type="url" id="meetingLocation" required placeholder="https://meet.google.com/xxx-yyyy-zzz">
-                            <div class="help-text">
-                                <i class="fas fa-info-circle"></i>
-                                كيفية الحصول على الرابط: اذهب إلى <a href="https://meet.google.com" target="_blank">meet.google.com</a> ← اضغط "بدء اجتماع" ← انسخ الرابط الطويل
-                            </div>
                         </div>
                         
                         <div class="form-group"><label><i class="fas fa-align-left"></i> وصف الاجتماع</label><textarea id="meetingDescription" rows="2" placeholder="أهداف الاجتماع..."></textarea></div>
-                        <div id="conflictWarning" class="conflict-warning"><i class="fas fa-exclamation-triangle"></i> <span></span></div>
                         <button type="submit" class="submit-btn"><i class="fas fa-calendar-check"></i> حجز الاجتماع</button>
                         <div id="meetingSuccess" class="alert alert-success"></div>
                         <div id="meetingError" class="alert alert-danger"></div>
@@ -237,14 +239,14 @@
             </div>
         </div>
 
-        <footer class="footer"><p>© 2026 دار للسلام والازدهار. جميع الحقوق محفوظة.</p><p>نظام الإجازات والاجتماعات المتكامل</p></footer>
+        <footer class="footer"><p>© 2026 دار للسلام والازدهار. جميع الحقوق محفوظة.</p></footer>
     </div>
 
     <script>
-        // ============= رابط Google Apps Script =============
+        // رابط Google Apps Script
         const LEAVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
 
-        // ============= بيانات الموظفين =============
+        // بيانات الموظفين
         const employeesData = {
             "مهيدي الخالدي": { email: "malkhaldi@dar.ngo", dept: "المراقبة والتقييم", code: "ME_001" },
             "نانسي حلاق": { email: "nhallak@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" },
@@ -269,7 +271,7 @@
             "عصمت بكر": { email: "eBaker@dar.ngo", dept: "الشراكات", code: "Pa_E990" },
             "سمر قطان": { email: "skattan@dar.ngo", dept: "الإدارة التنفيذية", code: "CEO_S111" },
             "ربى علي": { email: "RAli@dar.ngo", dept: "البرامج", code: "Pro_R16" },
-            "حسن الحسين": { email: "HAlhusain@dar.ngo", dept: "البرامج", code: "Pro_H35" },
+            "حسن الحسين": { email: "HAlhusain@dar.ngo", dept: "البرامج", code: "Pro_H35" }
         };
 
         let meetings = [];
@@ -278,9 +280,9 @@
         let selectedDate = null;
         let isLoggedIn = false;
 
-        // ============= دوال التبويبات =============
+        // دوال التبويبات
         function switchTab(tab) {
-            if (tab === 'meeting' && !isLoggedIn) { alert('🔒 الرجاء تسجيل الدخول أولاً من تبويب الإجازات'); return; }
+            if (tab === 'meeting' && !isLoggedIn) { alert('🔒 الرجاء تسجيل الدخول أولاً'); return; }
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             if (tab === 'leave') {
@@ -289,20 +291,21 @@
             } else {
                 document.getElementById('meetingTabBtn').classList.add('active');
                 document.getElementById('meetingTab').classList.add('active');
-                loadMeetings(); renderCalendar();
+                loadMeetingsFromServer();
+                renderCalendar();
             }
         }
 
-        function unlockMeetingsTab() { isLoggedIn = true; document.getElementById('meetingTabBtn').classList.remove('disabled'); document.getElementById('meetingTabBtn').innerHTML = '<i class="fas fa-video"></i> حجز الاجتماعات'; }
+        function unlockMeetingsTab() { isLoggedIn = true; document.getElementById('meetingTabBtn').classList.remove('disabled'); }
 
-        // ============= دوال الإجازات =============
+        // دوال الإجازات
         function verifySecurityCode() {
             const code = document.getElementById('securityCode').value.trim();
-            const errorDiv = document.getElementById('securityError');
             let found = null;
-            for (const [name, data] of Object.entries(employeesData)) { if (data.code === code) { found = { name, ...data }; break; } }
+            for (const [name, data] of Object.entries(employeesData)) { 
+                if (data.code === code) { found = { name, ...data }; break; } 
+            }
             if (found) {
-                errorDiv.style.display = 'none';
                 currentEmployee = found;
                 document.getElementById('dept').value = found.dept;
                 document.getElementById('empName').value = found.name;
@@ -313,72 +316,17 @@
                 document.getElementById('returnDate').disabled = false;
                 document.getElementById('reason').disabled = false;
                 document.getElementById('submitLeaveBtn').disabled = false;
-                loadBalance(found.name);
                 unlockMeetingsTab();
-                alert(`✅ مرحباً ${found.name}\nتم فتح تبويب الاجتماعات`);
-            } else { errorDiv.style.display = 'block'; document.getElementById('securityCode').value = ''; }
+                alert(`✅ مرحباً ${found.name}`);
+            } else {
+                document.getElementById('securityError').style.display = 'block';
+                document.getElementById('securityCode').value = '';
+            }
         }
 
         function handleEnterKey(event) { if (event.key === 'Enter') verifySecurityCode(); }
 
-        async function loadBalance(name) {
-            const balanceDiv = document.getElementById('balanceSection');
-            const grid = document.getElementById('balanceGrid');
-            balanceDiv.style.display = 'block';
-            document.getElementById('balanceLoading').innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...';
-            try {
-                const response = await fetch(`${LEAVE_SCRIPT_URL}?action=getBalance&name=${encodeURIComponent(name)}`);
-                const result = await response.json();
-                if (result.success && result.balance) {
-                    const b = result.balance;
-                    const types = [
-                        { key: 'annual', label: 'سنوية', icon: 'fa-sun' }, { key: 'sick', label: 'مرضية', icon: 'fa-hospital' },
-                        { key: 'bereavement', label: 'وفاة', icon: 'fa-heart' }, { key: 'hourly', label: 'ساعية', icon: 'fa-clock' },
-                        { key: 'maternity', label: 'أمومة', icon: 'fa-baby' }, { key: 'paternity', label: 'أبوة', icon: 'fa-child' },
-                        { key: 'unpaid', label: 'بلا راتب', icon: 'fa-money-bill' }, { key: 'hajj', label: 'حج', icon: 'fa-mosque' },
-                        { key: 'marriage', label: 'زواج', icon: 'fa-heart' }
-                    ];
-                    grid.innerHTML = '';
-                    types.forEach(t => { grid.innerHTML += `<div class="balance-item"><i class="fas ${t.icon}"></i><div class="label">${t.label}</div><div class="value">${b[t.key] || 0}</div><div class="unit">${t.key === 'hourly' ? 'ساعة' : 'يوم'}</div></div>`; });
-                    document.getElementById('balanceLoading').innerHTML = '';
-                } else { throw new Error(result.error); }
-            } catch (error) {
-                console.error('خطأ في جلب الرصيد:', error);
-                document.getElementById('balanceLoading').innerHTML = '<span style="color: #ff6b6b;">⚠️ خطأ في جلب الرصيد من السيرفر</span>';
-            }
-        }
-
-        document.getElementById('leaveForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!currentEmployee) return alert('الرجاء إدخال رمز الأمان أولاً');
-            const formData = {
-                name: currentEmployee.name, email: currentEmployee.email, dept: currentEmployee.dept,
-                type: document.getElementById('leaveType').value,
-                startDate: document.getElementById('startDate').value, endDate: document.getElementById('endDate').value,
-                returnDate: document.getElementById('returnDate').value, reason: document.getElementById('reason').value,
-                hours: document.getElementById('hours').value, submittedAt: new Date().toISOString()
-            };
-            document.getElementById('leaveLoader').style.display = 'block'; document.getElementById('submitLeaveBtn').disabled = true;
-            try {
-                await fetch(LEAVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formData), headers: { 'Content-Type': 'application/json' } });
-                document.getElementById('leaveLoader').style.display = 'none';
-                document.getElementById('leaveSuccess').innerHTML = '✅ تم إرسال طلب الإجازة بنجاح!';
-                document.getElementById('leaveSuccess').style.display = 'block';
-                document.getElementById('leaveForm').reset();
-                document.getElementById('dept').value = currentEmployee.dept;
-                document.getElementById('empName').value = currentEmployee.name;
-                document.getElementById('empEmail').value = currentEmployee.email;
-                setTimeout(() => { document.getElementById('leaveSuccess').style.display = 'none'; }, 5000);
-                loadBalance(currentEmployee.name);
-            } catch (error) { console.error(error); alert('حدث خطأ في الإرسال'); }
-            document.getElementById('submitLeaveBtn').disabled = false;
-        });
-
-        document.getElementById('leaveType').addEventListener('change', function() { document.getElementById('hoursGroup').style.display = this.value === 'hourly' ? 'block' : 'none'; });
-
-        // ============= دوال الاجتماعات =============
-        
-        // إضافة شخص جديد
+        // دوال الاجتماعات
         function addAttendee() {
             const container = document.getElementById('attendeesList');
             const newItem = document.createElement('div');
@@ -386,39 +334,25 @@
             newItem.innerHTML = `
                 <select class="attendee-select" required>
                     <option value="">اختر الشخص</option>
-                    <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
-                    <option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option>
-                    <option value="سيلفارت سلوم">سيلفارت سلوم</option><option value="محمد الهادي">محمد الهادي</option>
-                    <option value="خناف شمو">خناف شمو</option><option value="عبد الحميد الحسين">عبد الحميد الحسين</option>
-                    <option value="هند الفارس">هند الفارس</option><option value="آلان خليل">آلان خليل</option>
-                    <option value="هبة المناديلي">هبة المناديلي</option><option value="عبد القادر سباغ">عبد القادر سباغ</option>
-                    <option value="لادي حامدي">لادي حامدي</option><option value="محمد بدور">محمد بدور</option>
-                    <option value="رشا دهنة">رشا دهنة</option><option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option>
-                    <option value="مالك أومو">مالك أومو</option><option value="حازم الزير">حازم الزير</option>
-                    <option value="فيلكس">فيلكس</option><option value="ريعان العاني">ريعان العاني</option>
-                    <option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option>
-                    <option value="ربى علي">ربى علي</option>
-                    <option value="حسن الحسين">حسن الحسين</option>
+                    ${Object.keys(employeesData).map(name => `<option value="${name}">${name}</option>`).join('')}
                 </select>
                 <button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button>
             `;
             container.appendChild(newItem);
-            updateEmailsPreview();
-            
-            // إضافة حدث للتحديث عند تغيير الاختيار
             newItem.querySelector('.attendee-select').addEventListener('change', updateEmailsPreview);
+            updateEmailsPreview();
         }
-        
+
         function removeAttendee(btn) {
             const container = document.getElementById('attendeesList');
             if (container.children.length > 1) {
                 btn.closest('.attendee-item').remove();
                 updateEmailsPreview();
             } else {
-                alert('لا يمكن إزالة جميع المدعوين، يجب أن يكون هناك شخص واحد على الأقل');
+                alert('لا يمكن إزالة جميع المدعوين');
             }
         }
-        
+
         function updateEmailsPreview() {
             const selects = document.querySelectorAll('.attendee-select');
             const emails = [];
@@ -428,7 +362,6 @@
                     emails.push(`${name} (${employeesData[name].email})`);
                 }
             });
-            
             const previewDiv = document.getElementById('emailsPreview');
             const previewText = document.getElementById('emailsPreviewText');
             if (emails.length > 0) {
@@ -438,133 +371,118 @@
                 previewDiv.style.display = 'none';
             }
         }
-        
+
         function getSelectedAttendees() {
             const selects = document.querySelectorAll('.attendee-select');
             const attendees = [];
             selects.forEach(select => {
                 const name = select.value;
                 if (name && employeesData[name]) {
-                    attendees.push({
-                        name: name,
-                        email: employeesData[name].email
-                    });
+                    attendees.push({ name: name, email: employeesData[name].email });
                 }
             });
             return attendees;
         }
-        
-        function checkConflict() {
-            const date = document.getElementById('meetingDate').value;
-            const time = document.getElementById('meetingTime').value;
-            const attendees = getSelectedAttendees();
-            const warningDiv = document.getElementById('conflictWarning');
-            const warningSpan = warningDiv.querySelector('span');
-            
-            if (!date || !time || attendees.length === 0) { warningDiv.style.display = 'none'; return false; }
-            
-            let conflictFound = false;
-            let conflictNames = [];
-            
-            attendees.forEach(attendee => {
-                const conflict = meetings.find(m => m.attendees && m.attendees.some(a => a.name === attendee.name) && m.date === date && m.time === time);
-                if (conflict) {
-                    conflictFound = true;
-                    conflictNames.push(attendee.name);
+
+        async function loadMeetingsFromServer() {
+            try {
+                const response = await fetch(`${LEAVE_SCRIPT_URL}?action=getMeetings`);
+                const result = await response.json();
+                if (result.success && result.meetings) {
+                    meetings = result.meetings;
+                    renderMeetingsList();
+                    renderCalendar();
                 }
-            });
-            
-            if (conflictFound) {
-                warningSpan.innerHTML = `⚠️ ${conflictNames.join('، ')} مشغول في هذا الوقت باجتماع آخر`;
-                warningDiv.style.display = 'block';
-                return true;
-            } else {
-                warningDiv.style.display = 'none';
-                return false;
+            } catch (error) {
+                console.error('خطأ في جلب الاجتماعات:', error);
             }
         }
 
-        // إرسال الإيميلات
-        async function sendMeetingEmails(meeting, attendees) {
+        async function saveMeetingToServer(meeting, attendees) {
             try {
-                // إرسال إيميل واحد لكل مدعو
-                for (const attendee of attendees) {
-                    const emailData = {
-                        action: 'sendMeetingEmails',
-                        meeting: meeting,
-                        organizer: {
-                            name: currentEmployee.name,
-                            email: currentEmployee.email
-                        },
-                        attendee: attendee
-                    };
-                    console.log(`📧 جاري إرسال إيميل إلى: ${attendee.name}`);
-                    await fetch(LEAVE_SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        body: JSON.stringify(emailData),
-                        headers: { 'Content-Type': 'application/json' }
-                    });
-                }
-                console.log('📧 تم إرسال جميع الإيميلات');
+                const data = {
+                    action: 'createMeeting',
+                    meeting: meeting,
+                    organizer: { name: currentEmployee.name, email: currentEmployee.email },
+                    attendees: attendees
+                };
+                await fetch(LEAVE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                });
                 return true;
             } catch (error) {
-                console.error('❌ خطأ في إرسال الإيميلات:', error);
+                console.error('خطأ في حفظ الاجتماع:', error);
                 return false;
             }
         }
 
-        function loadMeetings() { const saved = localStorage.getItem('dar_meetings'); meetings = saved ? JSON.parse(saved) : []; const today = new Date().toISOString().split('T')[0]; meetings = meetings.filter(m => m.date >= today); saveMeetings(); renderMeetingsList(); }
-        function saveMeetings() { localStorage.setItem('dar_meetings', JSON.stringify(meetings)); }
-        
         function renderMeetingsList() {
             const container = document.getElementById('meetingsList');
-            if (meetings.length === 0) { container.innerHTML = '<p style="color: #999; text-align: center;">لا توجد اجتماعات حالياً</p>'; return; }
-            meetings.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
-            container.innerHTML = meetings.map(m => `<div class="meeting-item"><h4>📌 ${m.title} <span class="meeting-badge">${m.duration} دقيقة</span></h4><p><i class="fas fa-users"></i> المدعوون: ${m.attendees.map(a => a.name).join('، ')}</p><p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p><p><i class="fas fa-link"></i> <a href="${m.location}" target="_blank" class="meeting-link">رابط الاجتماع</a></p><div class="meeting-actions">${currentEmployee && m.createdBy === currentEmployee.name ? `<button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button>` : ''}</div></div>`).join('');
+            if (meetings.length === 0) {
+                container.innerHTML = '<p style="color: #999; text-align: center;">لا توجد اجتماعات حالياً</p>';
+                return;
+            }
+            container.innerHTML = meetings.map(m => `
+                <div class="meeting-item">
+                    <h4>📌 ${m.title}</h4>
+                    <p><i class="fas fa-users"></i> مع: ${m.attendees?.map(a => a.name).join(', ') || m.attendee}</p>
+                    <p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p>
+                    <p><i class="fas fa-link"></i> <a href="${m.location}" target="_blank">رابط الاجتماع</a></p>
+                    ${m.createdBy === currentEmployee?.name ? `<div class="meeting-actions"><button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button></div>` : ''}
+                </div>
+            `).join('');
         }
 
-        function cancelMeeting(id) { if (confirm('هل تريد إلغاء هذا الاجتماع؟')) { meetings = meetings.filter(m => m.id !== id); saveMeetings(); renderMeetingsList(); renderCalendar(); alert('✅ تم إلغاء الاجتماع'); } }
+        function cancelMeeting(id) {
+            if (confirm('هل تريد إلغاء هذا الاجتماع؟')) {
+                meetings = meetings.filter(m => m.id != id);
+                renderMeetingsList();
+                renderCalendar();
+                alert('✅ تم إلغاء الاجتماع');
+            }
+        }
 
         function renderCalendar() {
-            const year = currentDate.getFullYear(), month = currentDate.getMonth(), firstDay = new Date(year, month, 1), lastDay = new Date(year, month + 1, 0), startDay = firstDay.getDay(), daysInMonth = lastDay.getDate();
+            const year = currentDate.getFullYear(), month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const startDay = firstDay.getDay();
+            
             document.getElementById('currentMonth').innerHTML = `${firstDay.toLocaleDateString('ar-EG', { month: 'long' })} ${year}`;
-            let grid = ''; ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'].forEach(d => { grid += `<div class="calendar-weekday">${d}</div>`; });
-            const prevMonthDays = (startDay + 6) % 7;
-            for (let i = prevMonthDays - 1; i >= 0; i--) { const prevDate = new Date(year, month, -i); grid += `<div class="calendar-day other-month">${prevDate.getDate()}</div>`; }
-            const today = new Date().toISOString().split('T')[0];
-            for (let d = 1; d <= daysInMonth; d++) { const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`; const hasMeeting = meetings.some(m => m.date === dateStr); const isSelected = selectedDate === dateStr; const isToday = dateStr === today; grid += `<div class="calendar-day ${hasMeeting ? 'has-meeting' : ''} ${isSelected ? 'selected' : ''}" onclick="selectDate('${dateStr}')">${d}${isToday ? '<span style="font-size:10px;">🔴</span>' : ''}</div>`; }
-            const remaining = 42 - (prevMonthDays + daysInMonth); for (let d = 1; d <= remaining; d++) { grid += `<div class="calendar-day other-month">${d}</div>`; }
+            
+            let grid = '';
+            ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'].forEach(d => { grid += `<div class="calendar-weekday">${d}</div>`; });
+            
+            for (let i = 0; i < startDay; i++) { grid += `<div class="calendar-day other-month"></div>`; }
+            
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                const hasMeeting = meetings.some(m => m.date === dateStr);
+                grid += `<div class="calendar-day ${hasMeeting ? 'has-meeting' : ''}" onclick="selectDate('${dateStr}')">${d}</div>`;
+            }
             document.getElementById('calendarGrid').innerHTML = grid;
         }
 
-        function selectDate(dateStr) { selectedDate = dateStr; document.getElementById('meetingDate').value = dateStr; renderCalendar(); checkConflict(); }
-        function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); }
+        function selectDate(dateStr) {
+            document.getElementById('meetingDate').value = dateStr;
+            renderCalendar();
+        }
 
+        function changeMonth(delta) {
+            currentDate.setMonth(currentDate.getMonth() + delta);
+            renderCalendar();
+        }
+
+        // إرسال النموذج
         document.getElementById('meetingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             if (!currentEmployee) { alert('الرجاء تسجيل الدخول أولاً'); return; }
             
-            // التحقق من صحة رابط Google Meet
-            const meetingLink = document.getElementById('meetingLocation').value.trim();
-            if (!meetingLink.includes('meet.google.com')) {
-                alert('⚠️ الرجاء إدخال رابط Google Meet صحيح (يجب أن يبدأ بـ https://meet.google.com/)');
-                return;
-            }
-            
-            // جلب المدعوين
             const attendees = getSelectedAttendees();
-            if (attendees.length === 0) {
-                alert('⚠️ الرجاء إضافة شخص واحد على الأقل');
-                return;
-            }
-            
-            if (checkConflict()) {
-                document.getElementById('meetingError').innerHTML = '⚠️ لا يمكن حجز الاجتماع لأن أحد المدعوين مشغول في هذا الوقت';
-                document.getElementById('meetingError').style.display = 'block';
-                setTimeout(() => { document.getElementById('meetingError').style.display = 'none'; }, 3000);
-                return;
-            }
+            if (attendees.length === 0) { alert('الرجاء اختيار شخص واحد على الأقل'); return; }
             
             const meeting = {
                 id: Date.now().toString(),
@@ -573,66 +491,63 @@
                 date: document.getElementById('meetingDate').value,
                 time: document.getElementById('meetingTime').value,
                 duration: document.getElementById('meetingDuration').value,
-                location: meetingLink,
+                location: document.getElementById('meetingLocation').value,
                 description: document.getElementById('meetingDescription').value,
                 createdBy: currentEmployee.name,
+                createdByEmail: currentEmployee.email,
                 createdAt: new Date().toISOString()
             };
             
             document.getElementById('meetingLoader').style.display = 'block';
             
-            meetings.push(meeting);
-            saveMeetings();
-            
-            await sendMeetingEmails(meeting, attendees);
+            await saveMeetingToServer(meeting, attendees);
             
             document.getElementById('meetingLoader').style.display = 'none';
-            document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح! تم إرسال الإشعار إلى ${attendees.length} شخص.<br>🔗 رابط الاجتماع: <a href="${meeting.location}" target="_blank">${meeting.location}</a>`;
+            document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح!`;
             document.getElementById('meetingSuccess').style.display = 'block';
             document.getElementById('meetingForm').reset();
-            document.getElementById('attendeesList').innerHTML = `
-                <div class="attendee-item">
-                    <select class="attendee-select" required>
-                        <option value="">اختر الشخص</option>
-                        <option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option>
-                        <option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option>
-                        <option value="سيلفارت سلوم">سيلفارت سلوم</option><option value="محمد الهادي">محمد الهادي</option>
-                        <option value="خناف شمو">خناف شمو</option><option value="عبد الحميد الحسين">عبد الحميد الحسين</option>
-                        <option value="هند الفارس">هند الفارس</option><option value="آلان خليل">آلان خليل</option>
-                        <option value="هبة المناديلي">هبة المناديلي</option><option value="عبد القادر سباغ">عبد القادر سباغ</option>
-                        <option value="لادي حامدي">لادي حامدي</option><option value="محمد بدور">محمد بدور</option>
-                        <option value="رشا دهنة">رشا دهنة</option><option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option>
-                        <option value="مالك أومو">مالك أومو</option><option value="حازم الزير">حازم الزير</option>
-                        <option value="فيلكس">فيلكس</option><option value="ريعان العاني">ريعان العاني</option>
-                        <option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option>
-                    </select>
-                    <button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button>
-                </div>
-            `;
-            document.getElementById('emailsPreview').style.display = 'none';
+            document.getElementById('attendeesList').innerHTML = `<div class="attendee-item"><select class="attendee-select" required><option value="">اختر الشخص</option>${Object.keys(employeesData).map(name => `<option value="${name}">${name}</option>`).join('')}</select><button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button></div>`;
             
             setTimeout(() => { document.getElementById('meetingSuccess').style.display = 'none'; }, 5000);
-            renderMeetingsList();
-            renderCalendar();
+            await loadMeetingsFromServer();
         });
 
+        document.getElementById('leaveForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = {
+                name: currentEmployee.name, email: currentEmployee.email, dept: currentEmployee.dept,
+                type: document.getElementById('leaveType').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                returnDate: document.getElementById('returnDate').value,
+                reason: document.getElementById('reason').value,
+                submittedAt: new Date().toISOString()
+            };
+            document.getElementById('leaveLoader').style.display = 'block';
+            await fetch(LEAVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formData), headers: { 'Content-Type': 'application/json' } });
+            document.getElementById('leaveLoader').style.display = 'none';
+            document.getElementById('leaveSuccess').innerHTML = '✅ تم إرسال طلب الإجازة بنجاح!';
+            document.getElementById('leaveSuccess').style.display = 'block';
+            setTimeout(() => { document.getElementById('leaveSuccess').style.display = 'none'; }, 5000);
+        });
+
+        // تهيئة
         function setupDates() {
-            const today = new Date().toISOString().split('T')[0], tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-            document.getElementById('startDate').value = today; document.getElementById('startDate').min = today;
-            document.getElementById('endDate').value = tomorrow.toISOString().split('T')[0];
-            document.getElementById('returnDate').value = tomorrow.toISOString().split('T')[0];
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+            document.getElementById('endDate').value = today;
+            document.getElementById('returnDate').value = today;
             document.getElementById('meetingDate').value = today;
         }
 
-        document.getElementById('meetingDate').addEventListener('change', checkConflict);
-        document.getElementById('meetingTime').addEventListener('change', checkConflict);
-        
-        // إضافة حدث التحديث للمدعوين
+        document.getElementById('leaveType').addEventListener('change', function() {
+            document.getElementById('hoursGroup').style.display = this.value === 'hourly' ? 'block' : 'none';
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
-            setupDates(); 
-            loadMeetings(); 
-            renderCalendar();
-            // إضافة حدث التحديث للقائمة الأولية
+            setupDates();
+            document.getElementById('mainForm').style.opacity = '0.5';
+            document.getElementById('mainForm').style.pointerEvents = 'none';
             document.querySelector('.attendee-select')?.addEventListener('change', updateEmailsPreview);
         });
     </script>
