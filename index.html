@@ -148,7 +148,7 @@
                     <form id="meetingForm">
                         <div class="form-group">
                             <label class="required-field"><i class="fas fa-heading"></i> عنوان الاجتماع</label>
-                            <input type="text" id="meetingTitle" required placeholder="مثال: اجتماع فريق البرامج">
+                            <input type="text" id="meetingTitle" required>
                         </div>
                         
                         <div class="form-group">
@@ -218,7 +218,7 @@
                             <input type="url" id="meetingLocation" required placeholder="https://meet.google.com/xxx-yyyy-zzz">
                         </div>
                         
-                        <div class="form-group"><label><i class="fas fa-align-left"></i> وصف الاجتماع</label><textarea id="meetingDescription" rows="2" placeholder="أهداف الاجتماع..."></textarea></div>
+                        <div class="form-group"><label><i class="fas fa-align-left"></i> وصف الاجتماع</label><textarea id="meetingDescription" rows="2"></textarea></div>
                         <button type="submit" class="submit-btn"><i class="fas fa-calendar-check"></i> حجز الاجتماع</button>
                         <div id="meetingSuccess" class="alert alert-success"></div>
                         <div id="meetingError" class="alert alert-danger"></div>
@@ -243,7 +243,7 @@
     </div>
 
     <script>
-        // رابط Google Apps Script
+        // رابط Google Apps Script (ضع رابطك هنا)
         const LEAVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxBhYpQM2kZYytBO0NtTxWem3PcvFOqYvipHf1b1FrVMHzwL47XOMz_AwMDN3Uwzz75/exec';
 
         // بيانات الموظفين
@@ -280,7 +280,7 @@
         let selectedDate = null;
         let isLoggedIn = false;
 
-        // دوال التبويبات
+        // ============= دوال التبويبات =============
         function switchTab(tab) {
             if (tab === 'meeting' && !isLoggedIn) { alert('🔒 الرجاء تسجيل الدخول أولاً'); return; }
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -298,7 +298,7 @@
 
         function unlockMeetingsTab() { isLoggedIn = true; document.getElementById('meetingTabBtn').classList.remove('disabled'); }
 
-        // دوال الإجازات
+        // ============= دوال الإجازات =============
         function verifySecurityCode() {
             const code = document.getElementById('securityCode').value.trim();
             let found = null;
@@ -326,7 +326,7 @@
 
         function handleEnterKey(event) { if (event.key === 'Enter') verifySecurityCode(); }
 
-        // دوال الاجتماعات
+        // ============= دوال الاجتماعات =============
         function addAttendee() {
             const container = document.getElementById('attendeesList');
             const newItem = document.createElement('div');
@@ -384,10 +384,12 @@
             return attendees;
         }
 
+        // ✅ جلب الاجتماعات من السيرفر
         async function loadMeetingsFromServer() {
             try {
                 const response = await fetch(`${LEAVE_SCRIPT_URL}?action=getMeetings`);
                 const result = await response.json();
+                console.log('📥 اجتماعات من السيرفر:', result);
                 if (result.success && result.meetings) {
                     meetings = result.meetings;
                     renderMeetingsList();
@@ -398,6 +400,7 @@
             }
         }
 
+        // ✅ حفظ اجتماع في السيرفر
         async function saveMeetingToServer(meeting, attendees) {
             try {
                 const data = {
@@ -406,6 +409,7 @@
                     organizer: { name: currentEmployee.name, email: currentEmployee.email },
                     attendees: attendees
                 };
+                console.log('📤 إرسال بيانات الاجتماع:', data);
                 await fetch(LEAVE_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -419,23 +423,25 @@
             }
         }
 
+        // عرض قائمة الاجتماعات
         function renderMeetingsList() {
             const container = document.getElementById('meetingsList');
-            if (meetings.length === 0) {
+            if (!meetings || meetings.length === 0) {
                 container.innerHTML = '<p style="color: #999; text-align: center;">لا توجد اجتماعات حالياً</p>';
                 return;
             }
             container.innerHTML = meetings.map(m => `
                 <div class="meeting-item">
                     <h4>📌 ${m.title}</h4>
-                    <p><i class="fas fa-users"></i> مع: ${m.attendees?.map(a => a.name).join(', ') || m.attendee}</p>
+                    <p><i class="fas fa-users"></i> المدعوون: ${m.attendees?.map(a => a.name).join(', ') || m.attendee || 'غير محدد'}</p>
                     <p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p>
-                    <p><i class="fas fa-link"></i> <a href="${m.location}" target="_blank">رابط الاجتماع</a></p>
+                    <p><i class="fas fa-link"></i> <a href="${m.location}" target="_blank" class="meeting-link">رابط الاجتماع</a></p>
                     ${m.createdBy === currentEmployee?.name ? `<div class="meeting-actions"><button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button></div>` : ''}
                 </div>
             `).join('');
         }
 
+        // إلغاء اجتماع
         function cancelMeeting(id) {
             if (confirm('هل تريد إلغاء هذا الاجتماع؟')) {
                 meetings = meetings.filter(m => m.id != id);
@@ -445,6 +451,7 @@
             }
         }
 
+        // عرض التقويم
         function renderCalendar() {
             const year = currentDate.getFullYear(), month = currentDate.getMonth();
             const firstDay = new Date(year, month, 1);
@@ -456,8 +463,10 @@
             let grid = '';
             ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'].forEach(d => { grid += `<div class="calendar-weekday">${d}</div>`; });
             
-            for (let i = 0; i < startDay; i++) { grid += `<div class="calendar-day other-month"></div>`; }
+            // الأيام الفارغة قبل بداية الشهر
+            for (let i = 0; i < (startDay + 6) % 7; i++) { grid += `<div class="calendar-day other-month"></div>`; }
             
+            // أيام الشهر
             for (let d = 1; d <= daysInMonth; d++) {
                 const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
                 const hasMeeting = meetings.some(m => m.date === dateStr);
@@ -476,7 +485,7 @@
             renderCalendar();
         }
 
-        // إرسال النموذج
+        // ============= إرسال النموذج =============
         document.getElementById('meetingForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             if (!currentEmployee) { alert('الرجاء تسجيل الدخول أولاً'); return; }
@@ -505,17 +514,27 @@
             document.getElementById('meetingLoader').style.display = 'none';
             document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح!`;
             document.getElementById('meetingSuccess').style.display = 'block';
+            
+            // إعادة تعيين النموذج
             document.getElementById('meetingForm').reset();
             document.getElementById('attendeesList').innerHTML = `<div class="attendee-item"><select class="attendee-select" required><option value="">اختر الشخص</option>${Object.keys(employeesData).map(name => `<option value="${name}">${name}</option>`).join('')}</select><button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button></div>`;
+            document.getElementById('emailsPreview').style.display = 'none';
             
             setTimeout(() => { document.getElementById('meetingSuccess').style.display = 'none'; }, 5000);
+            
+            // تحديث القائمة
             await loadMeetingsFromServer();
         });
 
+        // ============= إرسال الإجازة =============
         document.getElementById('leaveForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            if (!currentEmployee) return;
+            
             const formData = {
-                name: currentEmployee.name, email: currentEmployee.email, dept: currentEmployee.dept,
+                name: currentEmployee.name,
+                email: currentEmployee.email,
+                dept: currentEmployee.dept,
                 type: document.getElementById('leaveType').value,
                 startDate: document.getElementById('startDate').value,
                 endDate: document.getElementById('endDate').value,
@@ -523,6 +542,7 @@
                 reason: document.getElementById('reason').value,
                 submittedAt: new Date().toISOString()
             };
+            
             document.getElementById('leaveLoader').style.display = 'block';
             await fetch(LEAVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formData), headers: { 'Content-Type': 'application/json' } });
             document.getElementById('leaveLoader').style.display = 'none';
@@ -531,7 +551,7 @@
             setTimeout(() => { document.getElementById('leaveSuccess').style.display = 'none'; }, 5000);
         });
 
-        // تهيئة
+        // ============= تهيئة =============
         function setupDates() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('startDate').value = today;
