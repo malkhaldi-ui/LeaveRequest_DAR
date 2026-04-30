@@ -24,6 +24,14 @@
         .security-input-group { display: flex; gap: 10px; max-width: 400px; margin: 0 auto; }
         .security-input-group input { flex: 1; padding: 12px; border: none; border-radius: 8px; text-align: center; font-family: monospace; }
         .security-btn { background: var(--accent); color: var(--dark); border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        
+        /* بطاقة الرصيد */
+        .balance-section { background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); padding: 20px; border-radius: 15px; margin-bottom: 25px; color: white; display: none; }
+        .balance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 15px; }
+        .balance-item { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; text-align: center; }
+        .balance-item .value { font-size: 24px; font-weight: bold; }
+        .balance-loading { text-align: center; padding: 20px; }
+        
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark); }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
@@ -36,7 +44,10 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--secondary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .footer { text-align: center; padding: 30px 0; color: #666; font-size: 14px; border-top: 1px solid #eee; margin-top: 30px; }
-        @media (max-width: 768px) { .security-input-group { flex-direction: column; } }
+        .meeting-form-card { background: #f8f9fa; padding: 25px; border-radius: 15px; margin-bottom: 20px; }
+        .meetings-list { margin-top: 20px; max-height: 350px; overflow-y: auto; }
+        .meeting-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid var(--info); }
+        @media (max-width: 768px) { .security-input-group { flex-direction: column; } .balance-grid { grid-template-columns: repeat(2, 1fr); } }
     </style>
 </head>
 <body>
@@ -53,10 +64,17 @@
             <div class="security-section">
                 <h3><i class="fas fa-shield-alt"></i> رمز الأمان</h3>
                 <div class="security-input-group">
-                    <input type="password" id="securityCode" placeholder="أدخل الرمز السري">
+                    <input type="password" id="securityCode" placeholder="أدخل الرمز السري" onkeypress="handleEnterKey(event)">
                     <button class="security-btn" onclick="verifySecurityCode()"><i class="fas fa-lock-open"></i> دخول</button>
                 </div>
                 <div id="securityError" style="color: #ff6b6b; margin-top: 10px; display: none;">رمز خاطئ!</div>
+            </div>
+
+            <!-- ✅ بطاقة الرصيد -->
+            <div id="balanceSection" class="balance-section">
+                <h3><i class="fas fa-chart-pie"></i> رصيد الإجازات المتبقي</h3>
+                <div id="balanceLoading" class="balance-loading">جاري التحميل...</div>
+                <div id="balanceGrid" class="balance-grid"></div>
             </div>
 
             <form id="leaveForm">
@@ -76,37 +94,100 @@
 
         <!-- تبويب الاجتماعات -->
         <div id="meetingTab" class="tab-content">
-            <div class="meeting-form-card" style="background:#f8f9fa;padding:25px;border-radius:15px;">
-                <h3>📅 حجز اجتماع جديد</h3>
+            <div class="meeting-form-card">
+                <h3><i class="fas fa-calendar-plus"></i> حجز اجتماع جديد</h3>
                 <form id="meetingForm">
                     <div class="form-group"><label>عنوان الاجتماع</label><input type="text" id="meetingTitle" required></div>
                     <div class="form-group"><label>مع من</label><select id="meetingAttendee"><option value="">اختر الشخص</option></select></div>
                     <div class="form-group"><label>التاريخ</label><input type="date" id="meetingDate" required></div>
-                    <div class="form-group"><label>الوقت</label><select id="meetingTime"><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option></select></div>
-                    <div class="form-group"><label>رابط Google Meet</label><input type="url" id="meetingLocation" required></div>
+                    <div class="form-group"><label>الوقت</label><select id="meetingTime"><option value="10:00">10:00 صباحاً</option><option value="11:00">11:00 صباحاً</option><option value="12:00">12:00 ظهراً</option></select></div>
+                    <div class="form-group"><label>رابط Google Meet</label><input type="url" id="meetingLocation" required placeholder="https://meet.google.com/xxx-yyyy-zzz"></div>
                     <button type="submit" class="submit-btn">حجز الاجتماع</button>
                     <div id="meetingSuccess" class="alert alert-success"></div>
                     <div id="meetingError" class="alert alert-danger"></div>
                     <div class="loader" id="meetingLoader"><div class="spinner"></div></div>
                 </form>
             </div>
-            <div id="meetingsList" style="margin-top:20px;"><p style="color:#999;">لا توجد اجتماعات</p></div>
+            <div id="meetingsList" class="meetings-list"><p style="color:#999; text-align:center;">لا توجد اجتماعات</p></div>
         </div>
         
         <footer class="footer"><p>© 2026 دار للسلام والازدهار</p></footer>
     </div>
 
     <script>
-        // ============= الرابط الجديد =============
+        // ============= الرابط =============
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpgH-eHxTdcTTK8qi3NtkGC6woI3N-1YJ7DGGoBxu4QJi10popZ-0OQVE6L1oq9Uzw/exec';
 
         // ============= بيانات الموظفين =============
         const employees = {
             "مهيدي الخالدي": { email: "malkhaldi@dar.ngo", dept: "المراقبة والتقييم", code: "ME_001" },
-            "نانسي حلاق": { email: "nhallak@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" }
+            "نانسي حلاق": { email: "nhallak@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" },
+            "سلاف أبو حمدان": { email: "shamdan@dar.ngo", dept: "البرامج", code: "Pro_202" },
+            "رغد العبو": { email: "ralabo@dar.ngo", dept: "البرامج", code: "Pro_020" },
+            "سيلفارت سلوم": { email: "ssalloum@dar.ngo", dept: "البرامج", code: "Pro_S26" },
+            "محمد الهادي": { email: "malhadi@dar.ngo", dept: "البرامج", code: "Pro_M62" },
+            "خناف شمو": { email: "kshamo@dar.ngo", dept: "البرامج", code: "Pro_X002" },
+            "عبد الحميد الحسين": { email: "aALHUSSAIN@dar.ngo", dept: "البرامج", code: "Pro_A89" },
+            "هند الفارس": { email: "hAlfares@dar.ngo", dept: "البرامج", code: "Pro_H55" },
+            "آلان خليل": { email: "akhalil@dar.ngo", dept: "العمليات", code: "Op_A159" },
+            "هبة المناديلي": { email: "hr@dar.ngo", dept: "العمليات", code: "Op_H753" },
+            "عبد القادر سباغ": { email: "asabbagh@dar.ngo", dept: "العمليات", code: "Op_A654" },
+            "لادي حامدي": { email: "lHamdi@dar.ngo", dept: "العمليات", code: "Op_L351" },
+            "محمد بدور": { email: "mbaddou@dar.ngo", dept: "العمليات", code: "Op_M957" },
+            "رشا دهنة": { email: "rdehneh@dar.ngo", dept: "العمليات", code: "Op_R684" },
+            "إبراهيم شيخ نبي": { email: "inabi@dar.ngo", dept: "العمليات", code: "Op_IB132" },
+            "مالك أومو": { email: "momo@dar.ngo", dept: "العمليات", code: "Op_M095" },
+            "حازم الزير": { email: "Hmohammad@dar.ngo", dept: "الإعلام", code: "M_H268" },
+            "فيلكس": { email: "fLegrand@dar.ngo", dept: "الشراكات", code: "Pa_F624" },
+            "ريعان العاني": { email: "ralani@dar.ngo", dept: "الشراكات", code: "Pa_R978" },
+            "عصمت بكر": { email: "eBaker@dar.ngo", dept: "الشراكات", code: "Pa_E990" },
+            "سمر قطان": { email: "skattan@dar.ngo", dept: "الإدارة التنفيذية", code: "CEO_S111" }
         };
 
         let currentUser = null;
+
+        // ============= جلب الرصيد من السيرفر =============
+        async function loadBalance(employeeName) {
+            const balanceDiv = document.getElementById('balanceSection');
+            const grid = document.getElementById('balanceGrid');
+            const loading = document.getElementById('balanceLoading');
+            
+            balanceDiv.style.display = 'block';
+            loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...';
+            grid.innerHTML = '';
+            
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getBalance&name=${encodeURIComponent(employeeName)}`);
+                const result = await response.json();
+                
+                if (result.success && result.balance) {
+                    const b = result.balance;
+                    const types = [
+                        { key: 'annual', label: 'سنوية', icon: 'fa-sun' },
+                        { key: 'sick', label: 'مرضية', icon: 'fa-hospital' },
+                        { key: 'bereavement', label: 'وفاة', icon: 'fa-heart' },
+                        { key: 'hourly', label: 'ساعية', icon: 'fa-clock' },
+                        { key: 'maternity', label: 'أمومة', icon: 'fa-baby' },
+                        { key: 'paternity', label: 'أبوة', icon: 'fa-child' },
+                        { key: 'unpaid', label: 'بلا راتب', icon: 'fa-money-bill' },
+                        { key: 'hajj', label: 'حج', icon: 'fa-mosque' },
+                        { key: 'marriage', label: 'زواج', icon: 'fa-heart' }
+                    ];
+                    
+                    grid.innerHTML = '';
+                    types.forEach(t => {
+                        const value = b[t.key] || 0;
+                        grid.innerHTML += `<div class="balance-item"><i class="fas ${t.icon}"></i><div class="label">${t.label}</div><div class="value">${value}</div><div class="unit">${t.key === 'hourly' ? 'ساعة' : 'يوم'}</div></div>`;
+                    });
+                    loading.innerHTML = '';
+                } else {
+                    throw new Error(result.error);
+                }
+            } catch (error) {
+                console.error('خطأ في جلب الرصيد:', error);
+                loading.innerHTML = '<span style="color:#ff6b6b;">⚠️ خطأ في جلب الرصيد</span>';
+            }
+        }
 
         // ============= تسجيل الدخول =============
         window.verifySecurityCode = function() {
@@ -125,7 +206,9 @@
                     document.getElementById('submitLeaveBtn').disabled = false;
                     document.getElementById('meetingTabBtn').classList.remove('disabled');
                     document.getElementById('securityError').style.display = 'none';
-                    alert(`✅ مرحباً ${name}`);
+                    
+                    // ✅ جلب الرصيد
+                    loadBalance(name);
                     
                     // تعبئة قائمة الاجتماعات
                     const attendeeSelect = document.getElementById('meetingAttendee');
@@ -133,11 +216,14 @@
                     for (const [n] of Object.entries(employees)) {
                         if (n !== name) attendeeSelect.innerHTML += `<option value="${n}">${n}</option>`;
                     }
+                    alert(`✅ مرحباً ${name}`);
                     return;
                 }
             }
             document.getElementById('securityError').style.display = 'block';
         };
+
+        function handleEnterKey(event) { if (event.key === 'Enter') verifySecurityCode(); }
 
         // ============= إرسال إجازة =============
         document.getElementById('leaveForm').addEventListener('submit', async (e) => {
@@ -157,6 +243,7 @@
             document.getElementById('leaveSuccess').innerHTML = '✅ تم إرسال الطلب!';
             document.getElementById('leaveSuccess').style.display = 'block';
             setTimeout(() => document.getElementById('leaveSuccess').style.display = 'none', 3000);
+            loadBalance(currentUser.name); // تحديث الرصيد بعد الإرسال
         });
 
         // ============= حجز اجتماع =============
