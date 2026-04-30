@@ -6,56 +6,27 @@
     <title>نظام الإجازات والاجتماعات - دار للسلام والازدهار</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* --- نفس التنسيقات التي كانت موجودة (لم يتم تغييرها) --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        :root { --primary: #3C6255; --secondary: #9CAF88; --accent: #FFD700; --dark: #2A4A3D; --success: #28a745; --danger: #dc3545; --warning: #ffc107; --info: #17a2b8; }
-        body { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); min-height: 100vh; color: #333; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        :root { --primary: #3C6255; --secondary: #9CAF88; --accent: #FFD700; --dark: #2A4A3D; --success: #28a745; --danger: #dc3545; --info: #17a2b8; }
+        body { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); min-height: 100vh; }
         .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
         .header { background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%); color: white; padding: 25px 0; text-align: center; border-radius: 15px 15px 0 0; }
         .logo { background: white; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
         .logo i { color: var(--primary); font-size: 36px; }
-        .header h1 { font-size: 32px; margin-bottom: 10px; }
         .tabs { display: flex; background: white; border-radius: 0 0 15px 15px; overflow: hidden; }
         .tab-btn { flex: 1; padding: 18px; font-size: 18px; font-weight: 600; border: none; background: #f8f9fa; color: #666; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .tab-btn.active { background: white; color: var(--primary); border-bottom: 3px solid var(--primary); }
         .tab-btn.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-        .tab-content { display: none; background: white; border-radius: 0 0 15px 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); animation: fadeIn 0.3s ease; }
+        .tab-content { display: none; background: white; border-radius: 0 0 15px 15px; padding: 30px; animation: fadeIn 0.3s ease; }
         .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .security-section { background: linear-gradient(135deg, var(--primary) 0%, var(--dark) 100%); padding: 25px; border-radius: 15px; margin-bottom: 25px; color: white; text-align: center; }
         .security-input-group { display: flex; gap: 10px; max-width: 400px; margin: 0 auto; }
         .security-input-group input { flex: 1; padding: 12px; border: none; border-radius: 8px; text-align: center; font-family: monospace; }
         .security-btn { background: var(--accent); color: var(--dark); border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-        .balance-section { background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%); padding: 20px; border-radius: 15px; margin-bottom: 25px; color: white; display: none; }
-        .balance-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 15px; }
-        .balance-item { background: rgba(255,255,255,0.1); padding: 12px; border-radius: 10px; text-align: center; }
-        .balance-item .value { font-size: 24px; font-weight: bold; }
-        .meeting-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        @media (max-width: 900px) { .meeting-layout { grid-template-columns: 1fr; } }
-        .meeting-form-card { background: #f8f9fa; border-radius: 15px; padding: 25px; border-right: 4px solid var(--info); }
-        .meeting-form-card h3 { color: var(--info); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .calendar-card { background: #f8f9fa; border-radius: 15px; padding: 25px; }
-        .calendar-card h3 { color: var(--primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .calendar-nav { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .calendar-weekday { padding: 10px; font-weight: bold; color: var(--primary); background: #e9ecef; border-radius: 8px; }
-        .calendar-day { padding: 12px; border-radius: 8px; cursor: pointer; background: white; border: 1px solid #e0e0e0; }
-        .calendar-day.selected { background: var(--primary); color: white; }
-        .calendar-day.has-meeting { background: #fff3cd; border-color: var(--warning); position: relative; }
-        .calendar-day.has-meeting::after { content: '●'; position: absolute; top: 2px; right: 5px; color: var(--warning); font-size: 10px; }
-        .calendar-day.other-month { color: #ccc; }
-        .meetings-list { margin-top: 20px; max-height: 350px; overflow-y: auto; }
-        .meeting-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-right: 3px solid var(--info); }
-        .meeting-item h4 { color: var(--dark); margin-bottom: 8px; }
-        .meeting-item p { font-size: 13px; color: #666; margin: 5px 0; }
-        .meeting-actions { margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap; }
-        .meeting-actions button { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; }
-        .meeting-link { background: var(--info); color: white; padding: 6px 12px; border-radius: 5px; text-decoration: none; font-size: 12px; display: inline-block; }
         .form-group { margin-bottom: 20px; }
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--dark); }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--info); }
         .submit-btn { background: linear-gradient(135deg, var(--info) 0%, #0d6efd 100%); color: white; border: none; padding: 14px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .readonly-field { background-color: #f0f0f0 !important; cursor: not-allowed; }
         .alert { padding: 15px; border-radius: 8px; margin-top: 15px; text-align: center; display: none; }
@@ -65,109 +36,152 @@
         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid var(--secondary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .footer { text-align: center; padding: 30px 0; color: #666; font-size: 14px; border-top: 1px solid #eee; margin-top: 30px; }
-        .conflict-warning { background: #fff3cd; border: 1px solid var(--warning); color: #856404; padding: 10px; border-radius: 8px; margin-top: 10px; display: none; }
-        .help-text { font-size: 12px; color: #666; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
-        .help-text i { color: var(--info); }
-        .required-field::after { content: " *"; color: var(--danger); }
-        .attendees-container { border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; margin-top: 10px; background: white; }
-        .attendee-item { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; background: #f8f9fa; padding: 8px; border-radius: 6px; }
-        .attendee-item select { flex: 1; margin-bottom: 0; }
-        .attendee-item button { background: var(--danger); color: white; border: none; width: 32px; height: 32px; border-radius: 5px; cursor: pointer; }
-        .add-attendee-btn { background: var(--secondary); color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px; display: flex; align-items: center; gap: 5px; }
-        .add-attendee-btn:hover { background: var(--primary); }
-        .emails-list { margin-top: 10px; padding: 10px; background: #e8f4f8; border-radius: 8px; font-size: 13px; }
-        .emails-list i { color: var(--info); margin-left: 5px; }
-        @media (max-width: 768px) { .security-input-group { flex-direction: column; } .balance-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 768px) { .security-input-group { flex-direction: column; } }
     </style>
 </head>
 <body>
     <div class="container">
         <header class="header"><div class="logo"><i class="fas fa-hands-helping"></i></div><h1>دار للسلام والازدهار</h1><p>Dar for Peace and Prosperity</p></header>
+        
         <div class="tabs">
             <button class="tab-btn active" id="leaveTabBtn" onclick="switchTab('leave')"><i class="fas fa-calendar-alt"></i> طلبات الإجازة</button>
             <button class="tab-btn disabled" id="meetingTabBtn" onclick="switchTab('meeting')"><i class="fas fa-video"></i> حجز الاجتماعات 🔒</button>
         </div>
 
-        <!-- ========== تبويب الإجازات (بدون تغيير) ========== -->
+        <!-- تبويب الإجازات -->
         <div id="leaveTab" class="tab-content active">
-            <div class="security-section"><h3><i class="fas fa-shield-alt"></i> رمز الأمان</h3><div class="security-input-group"><input type="password" id="securityCode" placeholder="أدخل الرمز السري" onkeypress="handleEnterKey(event)"><button class="security-btn" onclick="verifySecurityCode()"><i class="fas fa-lock-open"></i> دخول</button></div><div id="securityError" style="color: #ff6b6b; margin-top: 10px; display: none;">رمز خاطئ!</div></div>
-            <div id="mainForm"><div id="balanceSection" class="balance-section"><h3><i class="fas fa-chart-pie"></i> رصيد الإجازات المتبقي</h3><div id="balanceLoading">جاري التحميل...</div><div id="balanceGrid" class="balance-grid"></div></div>
-            <form id="leaveForm"><div class="form-group"><label><i class="fas fa-building"></i> القسم</label><input type="text" id="dept" class="readonly-field" readonly></div><div class="form-group"><label><i class="fas fa-user"></i> اسم الموظف</label><input type="text" id="empName" class="readonly-field" readonly></div><div class="form-group"><label><i class="fas fa-envelope"></i> البريد الإلكتروني</label><input type="email" id="empEmail" class="readonly-field" readonly></div>
-            <div class="form-group"><label><i class="fas fa-tag"></i> نوع الإجازة</label><select id="leaveType" required disabled><option value="">اختر نوع الإجازة</option><option value="annual">إجازة سنوية</option><option value="sick">إجازة مرضية</option><option value="bereavement">إجازة وفاة</option><option value="hourly">إجازة ساعية</option><option value="maternity">إجازة أمومة</option><option value="paternity">إجازة أبوة</option><option value="unpaid">إجازة بلا راتب</option><option value="hajj">إجازة حج</option><option value="marriage">إجازة زواج</option></select></div>
-            <div id="hoursGroup" style="display:none;"><div class="form-group"><label><i class="fas fa-clock"></i> عدد الساعات</label><input type="number" id="hours" min="1" max="8" value="1"></div></div>
-            <div class="form-group"><label><i class="fas fa-calendar-plus"></i> تاريخ البدء</label><input type="date" id="startDate" required disabled></div><div class="form-group"><label><i class="fas fa-calendar-minus"></i> تاريخ الانتهاء</label><input type="date" id="endDate" required disabled></div><div class="form-group"><label><i class="fas fa-calendar-check"></i> تاريخ الالتحاق</label><input type="date" id="returnDate" required disabled></div>
-            <div class="form-group"><label><i class="fas fa-comment"></i> السبب</label><textarea id="reason" rows="3" required disabled></textarea></div><div class="loader" id="leaveLoader"><div class="spinner"></div></div>
-            <button type="submit" class="submit-btn" id="submitLeaveBtn" disabled style="background: linear-gradient(135deg, var(--primary), var(--dark));"><i class="fas fa-paper-plane"></i> إرسال الطلب</button><div id="leaveSuccess" class="alert alert-success"></div></form></div>
+            <div class="security-section">
+                <h3><i class="fas fa-shield-alt"></i> رمز الأمان</h3>
+                <div class="security-input-group">
+                    <input type="password" id="securityCode" placeholder="أدخل الرمز السري">
+                    <button class="security-btn" onclick="verifySecurityCode()"><i class="fas fa-lock-open"></i> دخول</button>
+                </div>
+                <div id="securityError" style="color: #ff6b6b; margin-top: 10px; display: none;">رمز خاطئ!</div>
+            </div>
+
+            <form id="leaveForm">
+                <div class="form-group"><label>القسم</label><input type="text" id="dept" class="readonly-field" readonly></div>
+                <div class="form-group"><label>اسم الموظف</label><input type="text" id="empName" class="readonly-field" readonly></div>
+                <div class="form-group"><label>البريد الإلكتروني</label><input type="email" id="empEmail" class="readonly-field" readonly></div>
+                <div class="form-group"><label>نوع الإجازة</label><select id="leaveType" disabled><option value="">اختر نوع الإجازة</option><option value="annual">إجازة سنوية</option><option value="sick">إجازة مرضية</option><option value="hourly">إجازة ساعية</option><option value="hajj">إجازة حج</option><option value="marriage">إجازة زواج</option></select></div>
+                <div class="form-group"><label>تاريخ البدء</label><input type="date" id="startDate" disabled></div>
+                <div class="form-group"><label>تاريخ الانتهاء</label><input type="date" id="endDate" disabled></div>
+                <div class="form-group"><label>تاريخ الالتحاق</label><input type="date" id="returnDate" disabled></div>
+                <div class="form-group"><label>السبب</label><textarea id="reason" rows="3" disabled></textarea></div>
+                <div class="loader" id="leaveLoader"><div class="spinner"></div></div>
+                <button type="submit" class="submit-btn" id="submitLeaveBtn" disabled>إرسال الطلب</button>
+                <div id="leaveSuccess" class="alert alert-success"></div>
+            </form>
         </div>
 
-        <!-- ========== تبويب الاجتماعات (تم تعديله ليحفظ في الشيت) ========== -->
+        <!-- تبويب الاجتماعات -->
         <div id="meetingTab" class="tab-content">
-            <div class="meeting-layout">
-                <div class="meeting-form-card"><h3><i class="fas fa-calendar-plus"></i> حجز اجتماع جديد</h3>
-                    <form id="meetingForm">
-                        <div class="form-group"><label class="required-field"><i class="fas fa-heading"></i> عنوان الاجتماع</label><input type="text" id="meetingTitle" required placeholder="مثال: اجتماع فريق البرامج"></div>
-                        <div class="form-group"><label class="required-field"><i class="fas fa-users"></i> المدعوون</label>
-                            <div id="attendeesContainer" class="attendees-container"><div id="attendeesList"><div class="attendee-item"><select class="attendee-select" required><option value="">اختر الشخص</option><option value="مهيدي الخالدي">مهيدي الخالدي</option><option value="نانسي حلاق">نانسي حلاق</option><option value="سلاف أبو حمدان">سلاف أبو حمدان</option><option value="رغد العبو">رغد العبو</option><option value="سيلفارت سلوم">سيلفارت سلوم</option><option value="محمد الهادي">محمد الهادي</option><option value="خناف شمو">خناف شمو</option><option value="عبد الحميد الحسين">عبد الحميد الحسين</option><option value="هند الفارس">هند الفارس</option><option value="آلان خليل">آلان خليل</option><option value="هبة المناديلي">هبة المناديلي</option><option value="عبد القادر سباغ">عبد القادر سباغ</option><option value="لادي حامدي">لادي حامدي</option><option value="محمد بدور">محمد بدور</option><option value="رشا دهنة">رشا دهنة</option><option value="إبراهيم شيخ نبي">إبراهيم شيخ نبي</option><option value="مالك أومو">مالك أومو</option><option value="حازم الزير">حازم الزير</option><option value="فيلكس">فيلكس</option><option value="ريعان العاني">ريعان العاني</option><option value="عصمت بكر">عصمت بكر</option><option value="سمر قطان">سمر قطان</option><option value="ربى علي">ربى علي</option><option value="حسن الحسين">حسن الحسين</option></select><button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button></div></div>
-                            <button type="button" class="add-attendee-btn" onclick="addAttendee()"><i class="fas fa-plus"></i> إضافة شخص آخر</button></div>
-                            <div id="emailsPreview" class="emails-list" style="display: none;"><i class="fas fa-envelope"></i> سيتم إرسال الإشعار إلى: <span id="emailsPreviewText"></span></div>
-                        </div>
-                        <div class="form-group"><label class="required-field"><i class="fas fa-calendar-day"></i> التاريخ</label><input type="date" id="meetingDate" required></div>
-                        <div class="form-group"><label class="required-field"><i class="fas fa-clock"></i> الوقت</label><select id="meetingTime" required><option value="">اختر الوقت</option><option value="09:00">09:00 صباحاً</option><option value="10:00">10:00 صباحاً</option><option value="11:00">11:00 صباحاً</option><option value="12:00">12:00 ظهراً</option><option value="13:00">01:00 مساءً</option><option value="14:00">02:00 مساءً</option><option value="15:00">03:00 مساءً</option><option value="16:00">04:00 مساءً</option></select></div>
-                        <div class="form-group"><label><i class="fas fa-hourglass-half"></i> المدة</label><select id="meetingDuration"><option value="30">30 دقيقة</option><option value="60" selected>1 ساعة</option><option value="90">1.5 ساعة</option><option value="120">2 ساعة</option></select></div>
-                        <div class="form-group"><label class="required-field"><i class="fas fa-link"></i> رابط Google Meet</label><input type="url" id="meetingLocation" required placeholder="https://meet.google.com/xxx-yyyy-zzz"><div class="help-text"><i class="fas fa-info-circle"></i> كيفية الحصول على الرابط: اذهب إلى <a href="https://meet.google.com" target="_blank">meet.google.com</a> ← اضغط "بدء اجتماع" ← انسخ الرابط الطويل</div></div>
-                        <div class="form-group"><label><i class="fas fa-align-left"></i> وصف الاجتماع</label><textarea id="meetingDescription" rows="2" placeholder="أهداف الاجتماع..."></textarea></div>
-                        <button type="submit" class="submit-btn"><i class="fas fa-calendar-check"></i> حجز الاجتماع</button>
-                        <div id="meetingSuccess" class="alert alert-success"></div><div id="meetingError" class="alert alert-danger"></div><div class="loader" id="meetingLoader"><div class="spinner"></div></div>
-                    </form>
-                </div>
-                <div><div class="calendar-card"><h3><i class="fas fa-calendar-alt"></i> التقويم</h3><div class="calendar-header"><button class="calendar-nav" onclick="changeMonth(-1)">‹</button><h3 id="currentMonth"></h3><button class="calendar-nav" onclick="changeMonth(1)">›</button></div><div class="calendar-grid" id="calendarGrid"></div></div>
-                <div class="meeting-form-card" style="margin-top: 20px;"><h3><i class="fas fa-list-check"></i> جميع الاجتماعات المحجوزة</h3><div id="meetingsList" class="meetings-list"><p style="color: #999; text-align: center;">لا توجد اجتماعات حالياً</p></div></div></div>
+            <div class="meeting-form-card" style="background:#f8f9fa;padding:25px;border-radius:15px;">
+                <h3>📅 حجز اجتماع جديد</h3>
+                <form id="meetingForm">
+                    <div class="form-group"><label>عنوان الاجتماع</label><input type="text" id="meetingTitle" required></div>
+                    <div class="form-group"><label>مع من</label><select id="meetingAttendee"><option value="">اختر الشخص</option></select></div>
+                    <div class="form-group"><label>التاريخ</label><input type="date" id="meetingDate" required></div>
+                    <div class="form-group"><label>الوقت</label><select id="meetingTime"><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option></select></div>
+                    <div class="form-group"><label>رابط Google Meet</label><input type="url" id="meetingLocation" required></div>
+                    <button type="submit" class="submit-btn">حجز الاجتماع</button>
+                    <div id="meetingSuccess" class="alert alert-success"></div>
+                    <div id="meetingError" class="alert alert-danger"></div>
+                    <div class="loader" id="meetingLoader"><div class="spinner"></div></div>
+                </form>
             </div>
+            <div id="meetingsList" style="margin-top:20px;"><p style="color:#999;">لا توجد اجتماعات</p></div>
         </div>
-        <footer class="footer"><p>© 2026 دار للسلام والازدهار. جميع الحقوق محفوظة.</p><p>نظام الإجازات والاجتماعات المتكامل</p></footer>
+        
+        <footer class="footer"><p>© 2026 دار للسلام والازدهار</p></footer>
     </div>
 
     <script>
-        // ============= رابط Google Apps Script (ضع رابطك هنا) =============
-        const LEAVE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpgH-eHxTdcTTK8qi3NtkGC6woI3N-1YJ7DGGoBxu4QJi10popZ-0OQVE6L1oq9Uzw/exec';
+        // ============= الرابط الجديد =============
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpgH-eHxTdcTTK8qi3NtkGC6woI3N-1YJ7DGGoBxu4QJi10popZ-0OQVE6L1oq9Uzw/exec';
 
         // ============= بيانات الموظفين =============
-        const employeesData = {
+        const employees = {
             "مهيدي الخالدي": { email: "malkhaldi@dar.ngo", dept: "المراقبة والتقييم", code: "ME_001" },
-            "نانسي حلاق": { email: "nhallak@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" },
-            "سلاف أبو حمدان": { email: "shamdan@dar.ngo", dept: "البرامج", code: "Pro_202" },
-            "رغد العبو": { email: "ralabo@dar.ngo", dept: "البرامج", code: "Pro_020" },
-            "سيلفارت سلوم": { email: "ssalloum@dar.ngo", dept: "البرامج", code: "Pro_S26" },
-            "محمد الهادي": { email: "malhadi@dar.ngo", dept: "البرامج", code: "Pro_M62" },
-            "خناف شمو": { email: "kshamo@dar.ngo", dept: "البرامج", code: "Pro_X002" },
-            "عبد الحميد الحسين": { email: "aALHUSSAIN@dar.ngo", dept: "البرامج", code: "Pro_A89" },
-            "هند الفارس": { email: "hAlfares@dar.ngo", dept: "البرامج", code: "Pro_H55" },
-            "آلان خليل": { email: "akhalil@dar.ngo", dept: "العمليات", code: "Op_A159" },
-            "هبة المناديلي": { email: "hr@dar.ngo", dept: "العمليات", code: "Op_H753" },
-            "عبد القادر سباغ": { email: "asabbagh@dar.ngo", dept: "العمليات", code: "Op_A654" },
-            "لادي حامدي": { email: "lHamdi@dar.ngo", dept: "العمليات", code: "Op_L351" },
-            "محمد بدور": { email: "mbaddou@dar.ngo", dept: "العمليات", code: "Op_M957" },
-            "رشا دهنة": { email: "rdehneh@dar.ngo", dept: "العمليات", code: "Op_R684" },
-            "إبراهيم شيخ نبي": { email: "inabi@dar.ngo", dept: "العمليات", code: "Op_IB132" },
-            "مالك أومو": { email: "momo@dar.ngo", dept: "العمليات", code: "Op_M095" },
-            "حازم الزير": { email: "Hmohammad@dar.ngo", dept: "الإعلام", code: "M_H268" },
-            "فيلكس": { email: "fLegrand@dar.ngo", dept: "الشراكات", code: "Pa_F624" },
-            "ريعان العاني": { email: "ralani@dar.ngo", dept: "الشراكات", code: "Pa_R978" },
-            "عصمت بكر": { email: "eBaker@dar.ngo", dept: "الشراكات", code: "Pa_E990" },
-            "سمر قطان": { email: "skattan@dar.ngo", dept: "الإدارة التنفيذية", code: "CEO_S111" },
-            "ربى علي": { email: "RAli@dar.ngo", dept: "البرامج", code: "Pro_R16" },
-            "حسن الحسين": { email: "HAlhusain@dar.ngo", dept: "البرامج", code: "Pro_H35" },
+            "نانسي حلاق": { email: "nhallak@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" }
         };
 
-        let meetings = [];
-        let currentEmployee = null;
-        let currentDate = new Date();
-        let selectedDate = null;
-        let isLoggedIn = false;
+        let currentUser = null;
 
-        // ============= دوال التبويبات =============
+        // ============= تسجيل الدخول =============
+        window.verifySecurityCode = function() {
+            const code = document.getElementById('securityCode').value.trim();
+            for (const [name, data] of Object.entries(employees)) {
+                if (data.code === code) {
+                    currentUser = { name, ...data };
+                    document.getElementById('dept').value = data.dept;
+                    document.getElementById('empName').value = name;
+                    document.getElementById('empEmail').value = data.email;
+                    document.getElementById('leaveType').disabled = false;
+                    document.getElementById('startDate').disabled = false;
+                    document.getElementById('endDate').disabled = false;
+                    document.getElementById('returnDate').disabled = false;
+                    document.getElementById('reason').disabled = false;
+                    document.getElementById('submitLeaveBtn').disabled = false;
+                    document.getElementById('meetingTabBtn').classList.remove('disabled');
+                    document.getElementById('securityError').style.display = 'none';
+                    alert(`✅ مرحباً ${name}`);
+                    
+                    // تعبئة قائمة الاجتماعات
+                    const attendeeSelect = document.getElementById('meetingAttendee');
+                    attendeeSelect.innerHTML = '<option value="">اختر الشخص</option>';
+                    for (const [n] of Object.entries(employees)) {
+                        if (n !== name) attendeeSelect.innerHTML += `<option value="${n}">${n}</option>`;
+                    }
+                    return;
+                }
+            }
+            document.getElementById('securityError').style.display = 'block';
+        };
+
+        // ============= إرسال إجازة =============
+        document.getElementById('leaveForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+            const formData = {
+                name: currentUser.name, email: currentUser.email, dept: currentUser.dept,
+                type: document.getElementById('leaveType').value,
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                returnDate: document.getElementById('returnDate').value,
+                reason: document.getElementById('reason').value
+            };
+            document.getElementById('leaveLoader').style.display = 'block';
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formData) });
+            document.getElementById('leaveLoader').style.display = 'none';
+            document.getElementById('leaveSuccess').innerHTML = '✅ تم إرسال الطلب!';
+            document.getElementById('leaveSuccess').style.display = 'block';
+            setTimeout(() => document.getElementById('leaveSuccess').style.display = 'none', 3000);
+        });
+
+        // ============= حجز اجتماع =============
+        document.getElementById('meetingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return alert('سجل الدخول أولاً');
+            const meeting = {
+                id: Date.now().toString(),
+                title: document.getElementById('meetingTitle').value,
+                attendee: document.getElementById('meetingAttendee').value,
+                attendeeEmail: employees[document.getElementById('meetingAttendee').value]?.email,
+                date: document.getElementById('meetingDate').value,
+                time: document.getElementById('meetingTime').value,
+                location: document.getElementById('meetingLocation').value,
+                createdBy: currentUser.name
+            };
+            document.getElementById('meetingLoader').style.display = 'block';
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'createMeeting', meeting, organizer: currentUser }) });
+            document.getElementById('meetingLoader').style.display = 'none';
+            document.getElementById('meetingSuccess').innerHTML = '✅ تم حجز الاجتماع!';
+            document.getElementById('meetingSuccess').style.display = 'block';
+            setTimeout(() => document.getElementById('meetingSuccess').style.display = 'none', 3000);
+        });
+
         function switchTab(tab) {
-            if (tab === 'meeting' && !isLoggedIn) { alert('🔒 الرجاء تسجيل الدخول أولاً من تبويب الإجازات'); return; }
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
             if (tab === 'leave') {
@@ -176,187 +190,17 @@
             } else {
                 document.getElementById('meetingTabBtn').classList.add('active');
                 document.getElementById('meetingTab').classList.add('active');
-                loadMeetingsFromServer();
-                renderCalendar();
             }
         }
-
-        function unlockMeetingsTab() { isLoggedIn = true; document.getElementById('meetingTabBtn').classList.remove('disabled'); document.getElementById('meetingTabBtn').innerHTML = '<i class="fas fa-video"></i> حجز الاجتماعات'; }
-
-        // ============= دوال الإجازات (بدون تغيير) =============
-        function verifySecurityCode() {
-            const code = document.getElementById('securityCode').value.trim();
-            let found = null;
-            for (const [name, data] of Object.entries(employeesData)) { if (data.code === code) { found = { name, ...data }; break; } }
-            if (found) {
-                currentEmployee = found;
-                document.getElementById('dept').value = found.dept;
-                document.getElementById('empName').value = found.name;
-                document.getElementById('empEmail').value = found.email;
-                document.getElementById('leaveType').disabled = false;
-                document.getElementById('startDate').disabled = false;
-                document.getElementById('endDate').disabled = false;
-                document.getElementById('returnDate').disabled = false;
-                document.getElementById('reason').disabled = false;
-                document.getElementById('submitLeaveBtn').disabled = false;
-                loadBalance(found.name);
-                unlockMeetingsTab();
-                alert(`✅ مرحباً ${found.name}\nتم فتح تبويب الاجتماعات`);
-            } else { document.getElementById('securityError').style.display = 'block'; document.getElementById('securityCode').value = ''; }
-        }
-
-        function handleEnterKey(event) { if (event.key === 'Enter') verifySecurityCode(); }
-
-        async function loadBalance(name) {
-            const balanceDiv = document.getElementById('balanceSection');
-            const grid = document.getElementById('balanceGrid');
-            balanceDiv.style.display = 'block';
-            document.getElementById('balanceLoading').innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل الرصيد...';
-            try {
-                const response = await fetch(`${LEAVE_SCRIPT_URL}?action=getBalance&name=${encodeURIComponent(name)}`);
-                const result = await response.json();
-                if (result.success && result.balance) {
-                    const b = result.balance;
-                    const types = [{ key: 'annual', label: 'سنوية', icon: 'fa-sun' }, { key: 'sick', label: 'مرضية', icon: 'fa-hospital' }, { key: 'bereavement', label: 'وفاة', icon: 'fa-heart' }, { key: 'hourly', label: 'ساعية', icon: 'fa-clock' }, { key: 'maternity', label: 'أمومة', icon: 'fa-baby' }, { key: 'paternity', label: 'أبوة', icon: 'fa-child' }, { key: 'unpaid', label: 'بلا راتب', icon: 'fa-money-bill' }, { key: 'hajj', label: 'حج', icon: 'fa-mosque' }, { key: 'marriage', label: 'زواج', icon: 'fa-heart' }];
-                    grid.innerHTML = '';
-                    types.forEach(t => { grid.innerHTML += `<div class="balance-item"><i class="fas ${t.icon}"></i><div class="label">${t.label}</div><div class="value">${b[t.key] || 0}</div><div class="unit">${t.key === 'hourly' ? 'ساعة' : 'يوم'}</div></div>`; });
-                    document.getElementById('balanceLoading').innerHTML = '';
-                } else { throw new Error(result.error); }
-            } catch (error) { console.error('خطأ في جلب الرصيد:', error); document.getElementById('balanceLoading').innerHTML = '<span style="color: #ff6b6b;">⚠️ خطأ في جلب الرصيد من السيرفر</span>'; }
-        }
-
-        document.getElementById('leaveForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!currentEmployee) return alert('الرجاء إدخال رمز الأمان أولاً');
-            const formData = { name: currentEmployee.name, email: currentEmployee.email, dept: currentEmployee.dept, type: document.getElementById('leaveType').value, startDate: document.getElementById('startDate').value, endDate: document.getElementById('endDate').value, returnDate: document.getElementById('returnDate').value, reason: document.getElementById('reason').value, hours: document.getElementById('hours').value, submittedAt: new Date().toISOString() };
-            document.getElementById('leaveLoader').style.display = 'block'; document.getElementById('submitLeaveBtn').disabled = true;
-            try {
-                await fetch(LEAVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(formData), headers: { 'Content-Type': 'application/json' } });
-                document.getElementById('leaveLoader').style.display = 'none';
-                document.getElementById('leaveSuccess').innerHTML = '✅ تم إرسال طلب الإجازة بنجاح!';
-                document.getElementById('leaveSuccess').style.display = 'block';
-                document.getElementById('leaveForm').reset();
-                document.getElementById('dept').value = currentEmployee.dept;
-                document.getElementById('empName').value = currentEmployee.name;
-                document.getElementById('empEmail').value = currentEmployee.email;
-                setTimeout(() => { document.getElementById('leaveSuccess').style.display = 'none'; }, 5000);
-                loadBalance(currentEmployee.name);
-            } catch (error) { console.error(error); alert('حدث خطأ في الإرسال'); }
-            document.getElementById('submitLeaveBtn').disabled = false;
-        });
-
-        document.getElementById('leaveType').addEventListener('change', function() { document.getElementById('hoursGroup').style.display = this.value === 'hourly' ? 'block' : 'none'; });
-
-        // ============= دوال الاجتماعات (المعدلة لحفظ في الشيت) =============
-        function addAttendee() {
-            const container = document.getElementById('attendeesList');
-            const newItem = document.createElement('div');
-            newItem.className = 'attendee-item';
-            newItem.innerHTML = `<select class="attendee-select" required><option value="">اختر الشخص</option>${Object.keys(employeesData).map(name => `<option value="${name}">${name}</option>`).join('')}</select><button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button>`;
-            container.appendChild(newItem);
-            newItem.querySelector('.attendee-select').addEventListener('change', updateEmailsPreview);
-            updateEmailsPreview();
-        }
-
-        function removeAttendee(btn) { if (document.getElementById('attendeesList').children.length > 1) { btn.closest('.attendee-item').remove(); updateEmailsPreview(); } else alert('لا يمكن إزالة جميع المدعوين'); }
-
-        function updateEmailsPreview() {
-            const selects = document.querySelectorAll('.attendee-select');
-            const emails = [];
-            selects.forEach(select => { const name = select.value; if (name && employeesData[name]) emails.push(`${name} (${employeesData[name].email})`); });
-            const previewDiv = document.getElementById('emailsPreview');
-            if (emails.length > 0) { document.getElementById('emailsPreviewText').innerHTML = emails.join('، '); previewDiv.style.display = 'block'; } else previewDiv.style.display = 'none';
-        }
-
-        function getSelectedAttendees() {
-            const attendees = [];
-            document.querySelectorAll('.attendee-select').forEach(select => { const name = select.value; if (name && employeesData[name]) attendees.push({ name: name, email: employeesData[name].email }); });
-            return attendees;
-        }
-
-        // جلب الاجتماعات من السيرفر
-        async function loadMeetingsFromServer() {
-            try {
-                const response = await fetch(`${LEAVE_SCRIPT_URL}?action=getMeetings`);
-                const result = await response.json();
-                if (result.success && result.meetings) { meetings = result.meetings; renderMeetingsList(); renderCalendar(); }
-            } catch (error) { console.error('خطأ في جلب الاجتماعات:', error); }
-        }
-
-        // حفظ اجتماع في السيرفر
-        async function saveMeetingToServer(meeting, attendees) {
-            try {
-                const data = { action: 'createMeeting', meeting: meeting, attendees: attendees, organizer: { name: currentEmployee.name, email: currentEmployee.email } };
-                await fetch(LEAVE_SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(data), headers: { 'Content-Type': 'application/json' } });
-                return true;
-            } catch (error) { console.error('خطأ في حفظ الاجتماع:', error); return false; }
-        }
-
-        function renderMeetingsList() {
-            const container = document.getElementById('meetingsList');
-            if (!meetings || meetings.length === 0) { container.innerHTML = '<p style="color: #999; text-align: center;">لا توجد اجتماعات حالياً</p>'; return; }
-            container.innerHTML = meetings.map(m => `<div class="meeting-item"><h4>📌 ${m.title}</h4><p><i class="fas fa-users"></i> المدعوون: ${m.attendees?.map(a => a.name).join(', ') || ''}</p><p><i class="fas fa-calendar"></i> ${m.date} - ${m.time}</p><p><i class="fas fa-link"></i> <a href="${m.location}" target="_blank" class="meeting-link">رابط الاجتماع</a></p>${m.createdBy === currentEmployee?.name ? `<div class="meeting-actions"><button onclick="cancelMeeting('${m.id}')"><i class="fas fa-trash"></i> إلغاء</button></div>` : ''}</div>`).join('');
-        }
-
-        async function cancelMeeting(id) {
-            if (confirm('هل تريد إلغاء هذا الاجتماع؟')) { meetings = meetings.filter(m => m.id != id); renderMeetingsList(); renderCalendar(); alert('✅ تم إلغاء الاجتماع'); }
-        }
-
-        function renderCalendar() {
-            const year = currentDate.getFullYear(), month = currentDate.getMonth();
-            const firstDay = new Date(year, month, 1);
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            let startDay = firstDay.getDay();
-            document.getElementById('currentMonth').innerHTML = `${firstDay.toLocaleDateString('ar-EG', { month: 'long' })} ${year}`;
-            let grid = ''; ['ح', 'ن', 'ث', 'ر', 'خ', 'ج', 'س'].forEach(d => { grid += `<div class="calendar-weekday">${d}</div>`; });
-            for (let i = 0; i < startDay; i++) grid += `<div class="calendar-day other-month"></div>`;
-            for (let d = 1; d <= daysInMonth; d++) {
-                const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                const hasMeeting = meetings.some(m => m.date === dateStr);
-                grid += `<div class="calendar-day ${hasMeeting ? 'has-meeting' : ''}" onclick="selectDate('${dateStr}')">${d}</div>`;
-            }
-            document.getElementById('calendarGrid').innerHTML = grid;
-        }
-
-        function selectDate(dateStr) { document.getElementById('meetingDate').value = dateStr; renderCalendar(); }
-        function changeMonth(delta) { currentDate.setMonth(currentDate.getMonth() + delta); renderCalendar(); }
-
-        document.getElementById('meetingForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            if (!currentEmployee) { alert('الرجاء تسجيل الدخول أولاً'); return; }
-            const meetingLink = document.getElementById('meetingLocation').value.trim();
-            if (!meetingLink.includes('meet.google.com')) { alert('⚠️ الرجاء إدخال رابط Google Meet صحيح'); return; }
-            const attendees = getSelectedAttendees();
-            if (attendees.length === 0) { alert('⚠️ الرجاء إضافة شخص واحد على الأقل'); return; }
-            const meeting = { id: Date.now().toString(), title: document.getElementById('meetingTitle').value, attendees: attendees, date: document.getElementById('meetingDate').value, time: document.getElementById('meetingTime').value, duration: document.getElementById('meetingDuration').value, location: meetingLink, description: document.getElementById('meetingDescription').value, createdBy: currentEmployee.name, createdByEmail: currentEmployee.email, createdAt: new Date().toISOString() };
-            document.getElementById('meetingLoader').style.display = 'block';
-            await saveMeetingToServer(meeting, attendees);
-            document.getElementById('meetingLoader').style.display = 'none';
-            document.getElementById('meetingSuccess').innerHTML = `✅ تم حجز الاجتماع بنجاح!`;
-            document.getElementById('meetingSuccess').style.display = 'block';
-            document.getElementById('meetingForm').reset();
-            document.getElementById('attendeesList').innerHTML = `<div class="attendee-item"><select class="attendee-select" required><option value="">اختر الشخص</option>${Object.keys(employeesData).map(name => `<option value="${name}">${name}</option>`).join('')}</select><button type="button" onclick="removeAttendee(this)"><i class="fas fa-trash"></i></button></div>`;
-            document.getElementById('emailsPreview').style.display = 'none';
-            setTimeout(() => { document.getElementById('meetingSuccess').style.display = 'none'; }, 5000);
-            await loadMeetingsFromServer();
-        });
 
         function setupDates() {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('startDate').value = today; document.getElementById('startDate').min = today;
+            document.getElementById('startDate').value = today;
             document.getElementById('endDate').value = today;
             document.getElementById('returnDate').value = today;
             document.getElementById('meetingDate').value = today;
         }
-
-        document.getElementById('meetingDate').addEventListener('change', () => renderCalendar());
-        
-        document.addEventListener('DOMContentLoaded', function() {
-            setupDates();
-            document.getElementById('mainForm').style.opacity = '0.5';
-            document.getElementById('mainForm').style.pointerEvents = 'none';
-            document.querySelector('.attendee-select')?.addEventListener('change', updateEmailsPreview);
-        });
+        setupDates();
     </script>
 </body>
 </html>
