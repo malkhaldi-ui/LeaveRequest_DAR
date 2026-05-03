@@ -91,6 +91,7 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                             <div class="form-group"><label>👤 اسم الموظف</label><input type="text" id="empName" style="background:#f9f9f9" readonly></div>
                             <div class="form-group"><label>🏢 القسم</label><input type="text" id="dept" style="background:#f9f9f9" readonly></div>
+			      <div class="form-group"><label>📧 البريد الإلكتروني</label><input type="email" id="email" style="background:#f9f9f9" readonly></div>
                         </div>
 
                         <div class="form-group">
@@ -180,7 +181,7 @@
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpgH-eHxTdcTTK8qi3NtkGC6woI3N-1YJ7DGGoBxu4QJi10popZ-0OQVE6L1oq9Uzw/exec';
         
-        const employeesData = {
+        const employees = {
             "مهيدي الخالدي": { email: "malkhaldi@dar.ngo", dept: "المراقبة والتقييم", code: "ME_001" },
             "نانسي حلاق": { email: "nhallak@dar.ngo", dept: "المراقبة والتقييم", code: "ME_222" },
             "سلاف أبو حمدان": { email: "shamdan@dar.ngo", dept: "البرامج", code: "Pro_202" },
@@ -209,20 +210,61 @@
         let allMeetings = [];
 
         function verifySecurityCode() {
-            const code = document.getElementById('securityCode').value.trim();
-            const found = Object.entries(employeesData).find(([name, data]) => data.code === code);
-            
-            if (found) {
-                currentEmployee = { name: found[0], ...found[1] };
-                document.getElementById('empName').value = currentEmployee.name;
-                document.getElementById('dept').value = currentEmployee.dept;
-                ['leaveType', 'startDate', 'endDate', 'returnDate', 'reason', 'submitLeaveBtn'].forEach(id => document.getElementById(id).disabled = false);
-                document.getElementById('meetingTabBtn').classList.remove('disabled');
-                loadBalance();
-                fillAttendeeSelects();
-                alert(`أهلاً بك ${currentEmployee.name}! تم فك القفل.`);
-            } else { alert("❌ الرمز غير صحيح!"); }
+    const code = document.getElementById('securityCode').value.trim();
+    console.log('🔍 جاري التحقق من الرمز:', code);
+    
+    let found = null;
+    for (const [name, data] of Object.entries(employees)) {
+        if (data.code.trim() === code.trim()) {
+            found = { name, ...data };
+            console.log('✅ تم العثور على الموظف:', name, 'بالرمز:', data.code);
+            break;
         }
+    }
+    
+    if (found) {
+        currentEmployee = found;
+        document.getElementById('empName').value = currentEmployee.name;
+        document.getElementById('dept').value = currentEmployee.dept;
+        document.getElementById('email').value = currentEmployee.email;
+        
+        // تفعيل الحقول
+        const fields = ['leaveType', 'startDate', 'endDate', 'returnDate', 'reason', 'submitLeaveBtn'];
+        fields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.disabled = false;
+        });
+        
+        document.getElementById('meetingTabBtn').classList.remove('disabled');
+        
+        loadBalance();
+        fillAttendeeSelects();
+        
+        // ✅ رسالة الترحيب
+        Swal.fire({
+            icon: 'success',
+            title: 'مرحباً بك',
+            html: `<div style="font-size: 18px; margin-bottom: 10px;">👋 أهلاً بك <strong style="color: #3C6255;">${currentEmployee.name}</strong></div>
+                   <div style="font-size: 14px; color: #555;">في نظام الإجازات والاجتماعات<br>لمنظمة <strong style="color: #3C6255;">دار للسلام والازدهار</strong></div>`,
+            confirmButtonText: 'دخول',
+            confirmButtonColor: '#3C6255',
+            background: '#fff',
+            backdrop: true
+        });
+        
+    } else {
+        console.log('❌ الرمز غير صحيح:', code);
+        Swal.fire({
+            icon: 'error',
+            title: 'رمز خاطئ',
+            text: 'الرمز الذي أدخلته غير صحيح. يرجى المحاولة مرة أخرى.',
+            confirmButtonText: 'حاول مجدداً',
+            confirmButtonColor: '#dc3545'
+        });
+        document.getElementById('securityCode').value = '';
+        document.getElementById('securityCode').focus();
+    }
+}
 
         async function loadBalance() {
             const grid = document.getElementById('balanceGrid');
