@@ -325,9 +325,20 @@
         }
 
         function fillAttendeeSelects() {
-            const html = '<option value="">اختر زميلاً...</option>' + Object.keys(employeesData).map(name => `<option value="${name}">${name}</option>`).join('');
-            document.querySelector('.attendee-select').innerHTML = html;
-        }
+    
+    const employeeNames = Object.keys(employees);
+    const optionsHtml = employeeNames
+        .filter(name => name !== currentEmployee?.name) // استبعاد الموظف الحالي
+        .map(name => `<option value="${name}">${name}</option>`)
+        .join('');
+    
+    const html = `<option value="">اختر زميلاً...</option>${optionsHtml}`;
+    
+    // تحديث جميع حقول select الموجودة
+    document.querySelectorAll('.attendee-select').forEach(select => {
+        select.innerHTML = html;
+    });
+}
 
         function addAttendeeRow() {
             const div = document.createElement('div');
